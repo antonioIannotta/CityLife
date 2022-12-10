@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "1029390770678",
+    "project_id": "citylife-98ec7",
+    "storage_bucket": "citylife-98ec7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1029390770678:android:fbadab27fb6802e06be7d7",
+        "android_client_info": {
+          "package_name": "com.example.citylife"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1029390770678-0hi9cd0dgv186qm901i8cllk7rcep2il.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDoSHCc1VyrbqwoXyxVJgWRI9MCCWXFCpc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1029390770678-0hi9cd0dgv186qm901i8cllk7rcep2il.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
