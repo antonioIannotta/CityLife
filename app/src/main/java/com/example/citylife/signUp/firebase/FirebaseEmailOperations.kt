@@ -1,5 +1,6 @@
 package com.example.citylife.signUp.firebase
 
+import android.content.Intent
 import android.nfc.Tag
 import android.util.Log
 import com.google.firebase.auth.ktx.auth
@@ -22,6 +23,22 @@ class FirebaseEmailOperations {
         var firebaseSignUpResult = ""
 
         val auth = Firebase.auth
-        val intent =
+        val emailLink = Intent().data.toString()
+
+        if (auth.isSignInWithEmailLink(emailLink)) {
+
+            auth.signInWithEmailLink(email, emailLink)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        Log.d("FIREBASE", "Successfully signed in with email link")
+                        firebaseSignUpResult = "OK"
+                    } else {
+                        Log.d("FIREBASE", "ERROR!")
+                        firebaseSignUpResult = "FAIL"
+                    }
+                }
+        }
+
+        return firebaseSignUpResult
     }
 }

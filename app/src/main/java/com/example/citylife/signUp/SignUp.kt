@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.citylife.db.DatabaseOperations
 import com.example.citylife.model.User
+import com.example.citylife.signUp.firebase.FirebaseEmailOperations
 import java.security.MessageDigest
 import java.time.LocalDate
 
@@ -21,17 +22,23 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
         "Password" to password
     )
 
-    fun signUp(): User {
-        if (areEmailAndFiscalCodeUnique(email, password)) {
-            DatabaseOperations()
-                .insertUser("User", signUpMapOfValues, username)
-        }
+    fun signUp(): User? {
 
-        return User(username)
+        var user: User? = null
+
+        if (isEmailUnique(email)) {
+            FirebaseEmailOperations().sendEmail(email)
+            if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
+                DatabaseOperations()
+                    .insertUser("User", signUpMapOfValues, username)
+                user = User(username)
+            }
+        }
+        return user
     }
 
-    fun areEmailAndFiscalCodeUnique(email: String, fiscalCode: String): Boolean {
-        return check(email) && check(fiscalCode)
+    fun isEmailUnique(email: String): Boolean {
+        return check(email)
     }
 
     fun check(value: String): Boolean {
@@ -40,3 +47,5 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
         } == 0
     }
 }
+
+//TODO: TEST

@@ -29,4 +29,4 @@ class SignIn(val email: String, val password: String) {
             }.first().keys.first()
 }
 
-//TODO: effettuare il recupero dei documenti per verificare se effettivamente presente quella mail
+//TODO: TEST
