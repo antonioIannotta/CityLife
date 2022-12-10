@@ -1,7 +1,7 @@
 package com.example.citylife.signIn
 
 import com.example.citylife.db.DatabaseOperations
-import com.example.citylife.model.User
+import com.example.citylife.model.user.User
 
 class SignIn(val email: String, val password: String) {
 
@@ -10,6 +10,7 @@ class SignIn(val email: String, val password: String) {
         if (checkEmailExists(email) && checkPasswordWithEmail(email, password)) {
             retrievedUsername = retrieveUsername(email, password)
         }
+
         return User(retrievedUsername)
     }
 

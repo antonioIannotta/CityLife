@@ -1,9 +1,7 @@
 package com.example.citylife.signUp
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.example.citylife.db.DatabaseOperations
-import com.example.citylife.model.User
+import com.example.citylife.model.user.User
 import com.example.citylife.signUp.firebase.FirebaseEmailOperations
 import java.security.MessageDigest
 import java.time.LocalDate
