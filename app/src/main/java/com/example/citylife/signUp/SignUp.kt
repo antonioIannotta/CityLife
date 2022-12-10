@@ -16,7 +16,7 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
     val fiscalCode = FiscalCodeGeneration(name, surname, dateOfBirth, countryOfBirth, cityOfBirth)
         .generateFiscalCode()
 
-    val username =  MessageDigest.getInstance("MD5")
+    private val username =  MessageDigest.getInstance("MD5")
         .digest((name + surname + email).toByteArray()).toString()
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -34,6 +34,13 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
         return User(username)
     }
 
-    //TODO: cifrare la password, verificare che la mail e il codice fiscale non siano già presenti
-    //TODO: verificare la correttezza della mail
+    fun areEmailAndFiscalCodeUnique(email: String, fiscalCode: String): Boolean {
+        return check(email) && check(fiscalCode)
+    }
+
+    fun check(value: String): Boolean {
+        return DatabaseOperations().readAllDocuments("User").count {
+            document -> document.values.contains(value)
+        } == 0
+    }
 }
