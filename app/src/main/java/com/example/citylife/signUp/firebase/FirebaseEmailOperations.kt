@@ -8,7 +8,7 @@ import com.google.firebase.ktx.Firebase
 
 class FirebaseEmailOperations {
 
-    val actionCodeSettings = ActionCodeSettings().returnActionCodeSettings()
+    private val actionCodeSettings = ActionCodeSettings().returnActionCodeSettings()
 
     fun sendEmail(email: String) {
         Firebase.auth.sendSignInLinkToEmail(email, actionCodeSettings)
