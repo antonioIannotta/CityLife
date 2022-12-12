@@ -9,28 +9,50 @@ import org.bson.Document
 
 class DatabaseOperations {
 
-    val db_address = "127.0.0.1"
-    val port = 27017
-    val databaseName = "CityLife"
+    val db_address = "127.0.0.1" //indirizzo del DB
+    val port = 27017 //porta a cui è connesso il servizio
+    val databaseName = "CityLife" //nome del database
+    val userCollection = "User" //nome della collezione degli utenti all'interno del DB
+    val locationCollection = "Location"
 
 
+    /**
+     * Ritorna la connessione al database
+     */
     fun getDatabaseConnection(): MongoClient = MongoClient(db_address, port)
 
+    /**
+     * Ritorna la collezione dal DB passata come argomento
+     */
     fun getCollectionFromDatabase(collectionName: String): MongoCollection<Document> =
         getDatabaseConnection().getDatabase(databaseName).getCollection(collectionName)
 
-    fun insertUser(collectionName: String, documentComponents: Map<String, String>, username: String) {
+    /**
+     * Consente di inserire un utente all'interno della collezione degli utenti!
+     */
+    fun insertUser(documentComponents: Map<String, String>, username: String) {
         val document = Document(username, documentComponents)
-        getCollectionFromDatabase(collectionName).insertOne(document)
+        getCollectionFromDatabase(userCollection).insertOne(document)
     }
-    
-    fun readDocument(key: String, collectionName: String): Document? =
-        getCollectionFromDatabase(collectionName).find().first { Document().keys.contains(key) }
 
-    fun readAllDocuments(collectionName: String) = getCollectionFromDatabase(collectionName).find()
+    /**
+     * Trova all'interno della collezione degli utenti l'utente con lo specifico username
+     */
+    fun readUserByUsername(username: String): Document? =
+        getCollectionFromDatabase(userCollection).find().first {
+                document -> document.keys.contains(username)
+        }
 
-    fun insertLocation(collectionName: String, username: String, locationAndDistance: Map<String, Any>) =
-        getCollectionFromDatabase(collectionName)
+    /**
+     * Ritorna tutti i documenti presenti all'interno della collezione degli utenti
+     */
+    fun readAllUsers() = getCollectionFromDatabase(userCollection).find()
+
+    /**
+     * Inserisce la posizione e la distanza di interesse all'interno della collezione Location
+     */
+    fun insertLocationAndDistance(username: String, locationAndDistance: Map<String, Any>) =
+        getCollectionFromDatabase(locationCollection)
             .insertOne(Document(username, locationAndDistance))
 
 }

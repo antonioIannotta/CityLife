@@ -10,6 +10,9 @@ class FirebaseEmailOperations {
 
     private val actionCodeSettings = ActionCodeSettings().returnActionCodeSettings()
 
+    /**
+     * invia l'email di verifica all'indirizzo email selezionato
+     */
     fun sendEmail(email: String) {
         Firebase.auth.sendSignInLinkToEmail(email, actionCodeSettings)
             .addOnCompleteListener { task ->
@@ -19,6 +22,10 @@ class FirebaseEmailOperations {
             }
     }
 
+    /**
+     * metodo per completare la registrazione sulla base di quanto avviene con firebase,
+     * se la verifica della mail ha successo si esegue il metodo signup() della classe SignUp
+     */
     fun completeSignUp(email: String): String {
         var firebaseSignUpResult = ""
 
