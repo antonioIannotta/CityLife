@@ -1,5 +1,6 @@
 package com.example.citylife.db
 
+import android.location.Location
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
@@ -28,10 +29,8 @@ class DatabaseOperations {
 
     fun readAllDocuments(collectionName: String) = getCollectionFromDatabase(collectionName).find()
 
-
-    fun signalUpdate(reportType: String, collectionName: String, newReport: String) {
+    fun insertLocation(collectionName: String, username: String, locationAndDistance: Map<String, Any>) =
         getCollectionFromDatabase(collectionName)
-            .findOneAndUpdate(Filters.eq(reportType), Updates.set(reportType, newReport))
-    }
+            .insertOne(Document(username, locationAndDistance))
 
 }

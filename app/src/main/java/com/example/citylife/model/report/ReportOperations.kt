@@ -6,7 +6,8 @@ class ReportOperations {
         //TODO: implementare l'invio delle segnalazioni al server
     }
 
-    fun receiveReport(report: Report) {
+    fun receiveReport(): Report? {
         //TODO: implementare la ricezione delle segnalazioni dal server
+        return null
     }
 }
