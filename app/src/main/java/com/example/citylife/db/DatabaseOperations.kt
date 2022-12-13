@@ -51,7 +51,7 @@ class DatabaseOperations {
     /**
      * Inserisce la posizione e la distanza di interesse all'interno della collezione Location
      */
-    fun insertLocationAndDistance(username: String, locationAndDistance: Map<String, Any>) =
+    fun insertLocationAndDistance(username: String, locationAndDistance: Map<String, String>) =
         getCollectionFromDatabase(locationCollection)
             .insertOne(Document(username, locationAndDistance))
 
