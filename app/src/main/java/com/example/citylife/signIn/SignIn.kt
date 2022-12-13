@@ -21,8 +21,10 @@ class SignIn(val email: String, val password: String) {
      * Verifica che la password inserita sia effettivamente quella associata all'utente
      */
     private fun checkPasswordWithEmail(email: String, password: String): Boolean {
-        return DatabaseOperations().readAllUsers()
-            .count { document -> document.contains(email) && document.contains(password)} == 1
+        return DatabaseOperations().readAllUsers().count { 
+            document -> document.entries.toString().contains(email) && 
+                document.entries.toString().contains(password)
+        } == 1
     }
 
     /**
@@ -30,7 +32,7 @@ class SignIn(val email: String, val password: String) {
      */
     private fun checkEmailExists(email: String): Boolean =
         DatabaseOperations().readAllUsers()
-            .count { document -> document.values.contains(email) } == 1
+            .count { document -> document.entries.toString().contains(email) } == 1
 
     /**
      * recupera lo username con una certa email
@@ -38,8 +40,8 @@ class SignIn(val email: String, val password: String) {
     private fun retrieveUsername(email: String): String =
         DatabaseOperations().readAllUsers()
             .filter {
-                    document -> document.values.contains(email)
-            }.first().keys.first()
+                    document -> document.entries.toString().contains(email)
+            }.first().keys.last()
 }
 
 //TODO: TEST
