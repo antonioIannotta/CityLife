@@ -1,10 +1,7 @@
 package com.example.citylife.db
 
-import android.location.Location
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import org.bson.Document
 
 class DatabaseOperations {
