@@ -39,7 +39,7 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
             FirebaseEmailOperations().sendEmail(email)
             if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
                 DatabaseOperations()
-                    .insertUser( signUpMapOfValues, username)
+                    .insertUser(signUpMapOfValues, username)
                 user = User(username)
             }
         }
@@ -59,7 +59,7 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
      */
     fun check(value: String): Boolean {
         return DatabaseOperations().readAllUsers().count {
-            document -> document.values.contains(value)
+            document -> document.entries.toString().contains(value)
         } == 0
     }
 
