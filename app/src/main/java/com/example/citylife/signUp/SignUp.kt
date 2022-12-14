@@ -8,7 +8,7 @@ import com.example.citylife.signUp.firebase.FirebaseEmailOperations
 import java.security.MessageDigest
 import java.time.LocalDate
 
-data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalDate,
+data class SignUp(val name: String, val surname: String,
                   val email: String, val password: String) {
 
     /**
@@ -35,7 +35,7 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
 
         var user: User? = null
 
-        if (isEmailUnique(email) && checkAge()) {
+        if (isEmailUnique(email)) {
             FirebaseEmailOperations().sendEmail(email)
             if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
                 DatabaseOperations()
@@ -61,14 +61,6 @@ data class SignUp(val name: String, val surname: String, val dateOfBirth: LocalD
         return DatabaseOperations().readAllUsers().count {
             document -> document.entries.toString().contains(value)
         } == 0
-    }
-
-    /**
-     * verifica l'età
-     */
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun checkAge(): Boolean {
-        return (LocalDate.now().year - this.dateOfBirth.year) >= 16
     }
 }
 
