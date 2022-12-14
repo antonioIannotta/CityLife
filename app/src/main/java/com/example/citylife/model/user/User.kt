@@ -83,7 +83,7 @@ data class User(val username: String) {
      * segnalazioni
      */
     fun updateLocationOnDB() =
-        DatabaseOperations().insertLocationAndDistance(this.username, mapOf(
+        DatabaseOperations().insertOrUpdateLocationAndDistance(this.username, mapOf(
             "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
             "Distance" to getDistance().toString()
         ))

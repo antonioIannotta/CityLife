@@ -2,7 +2,11 @@ package com.example.citylife.db
 
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.model.Updates
 import org.bson.Document
+import org.bson.conversions.Bson
 
 class DatabaseOperations {
 
@@ -46,10 +50,21 @@ class DatabaseOperations {
     fun readAllUsers() = getCollectionFromDatabase(userCollection).find()
 
     /**
-     * Inserisce la posizione e la distanza di interesse all'interno della collezione Location
+     * Inserisce o aggiorna la posizione e la distanza di interesse all'interno della collezione Location
      */
-    fun insertLocationAndDistance(username: String, locationAndDistance: Map<String, String>) =
+    fun insertOrUpdateLocationAndDistance(username: String, locationAndDistance: Map<String, String>) {
+        val filter = Filters.eq("Username", username)
+        var updates = emptyList<Bson>().toMutableList()
+        updates.add(Updates.set("Username", username))
+        locationAndDistance.forEach {
+            entry -> updates.add(Updates.set(entry.key, entry.value))
+        }
+        val options = UpdateOptions().upsert(true)
+
+
         getCollectionFromDatabase(locationCollection)
-            .insertOne(Document(username, locationAndDistance))
+            .updateOne(filter, updates, options)
+
+    }
 
 }
