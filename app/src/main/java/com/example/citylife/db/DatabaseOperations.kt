@@ -10,7 +10,7 @@ import org.bson.conversions.Bson
 
 class DatabaseOperations {
 
-    val db_address = "127.0.0.1" //indirizzo del DB
+    val db_address = "10.0.2.2" //indirizzo del DB
     val port = 27017 //porta a cui è connesso il servizio
     val databaseName = "CityLife" //nome del database
     val userCollection = "User" //nome della collezione degli utenti all'interno del DB
