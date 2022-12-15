@@ -1,6 +1,7 @@
 package com.example.citylife
 
 import android.content.Context
+import android.os.AsyncTask
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -24,6 +25,11 @@ import androidx.compose.ui.unit.sp
 import com.example.citylife.model.user.User
 import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import kotlin.coroutines.suspendCoroutine
 
 class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,16 +112,23 @@ fun SignInUI(context: Context) {
 
 fun signInButtonClick(email: String, password: String, context: Context) {
 
-    val loggedUser: User
+    var loggedUser: User? = null
     val signInInterface = SignIn(email, password)
-    loggedUser = signInInterface.signIn()
 
-    if(loggedUser.username != null) {
-        Toast.makeText(context, "Hello ${loggedUser.username}!", Toast.LENGTH_SHORT).show()
-    } else {
-        Toast.makeText(context, "Sign in FAILED", Toast.LENGTH_SHORT).show()
+    val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
+    workerPool.submit {
+        loggedUser = signInInterface.signIn()
+        println("Username --> " + loggedUser!!.username)
+        /*if(loggedUser != null) {
+            Toast.makeText(context, "Hello ${loggedUser?.username}!", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Sign in FAILED", Toast.LENGTH_SHORT).show()
+        }*/
+        Toast.makeText(context, "Hello ${loggedUser?.username}!", Toast.LENGTH_SHORT).show()
     }
 }
+
+
 
 @Preview(
     showBackground = true,
