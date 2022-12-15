@@ -2,6 +2,7 @@ package com.example.citylife
 
 import android.content.Context
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -24,6 +25,10 @@ import com.example.citylife.model.user.User
 import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
 import kotlinx.coroutines.launch
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class SignInActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,26 +48,39 @@ class SignInActivity : ComponentActivity() {
 }
 
 
-suspend fun retrieveUser(email: String, password: String): User? {
+/*suspend fun retrieveUser(email: String, password: String): User? {
     return SignIn(email, password).signIn()
-}
+}*/
 
 @Composable
 fun SignInUI(context: Context) {
 
     val coroutineScope = rememberCoroutineScope()
-    val user = remember { mutableStateOf<User?>(null) }
+    //val user = remember { mutableStateOf<User?>(null) }
+
 
     val emailIconPainter = Icons.Default.Email
     val passwordIconPainter = Icons.Default.Info
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
-    val signInButtonClick: (email: String, password: String) -> Unit = { s: String, s1: String ->
+    /*val signInButtonClick: (email: String, password: String) -> Unit = { s: String, s1: String ->
         coroutineScope.launch {
             val user = retrieveUser(email, password)
         }
+    }*/
+
+    val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
+
+    fun signInButtonClick(email: String, password: String): Future<User> {
+        return workerPool.submit(Callable {
+            SignIn(email, password).signIn()
+        })
     }
+
+    lateinit var signedInUser: User
+
+
 
     Column(
         modifier = Modifier
@@ -105,7 +123,8 @@ fun SignInUI(context: Context) {
 
         OutlinedButton(
             onClick = {
-                signInButtonClick(email, password)
+                signedInUser = signInButtonClick(email, password).get()
+                Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
             },
             modifier = Modifier
                 .fillMaxWidth()
