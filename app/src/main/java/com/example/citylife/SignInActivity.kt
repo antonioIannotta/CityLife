@@ -110,6 +110,9 @@ fun SignInUI(context: Context) {
     }
 }
 
+var username = ""
+lateinit var user: User
+
 fun signInButtonClick(email: String, password: String, context: Context) {
 
     var loggedUser: User? = null
@@ -117,17 +120,15 @@ fun signInButtonClick(email: String, password: String, context: Context) {
 
     val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
     workerPool.submit {
-        loggedUser = signInInterface.signIn()
-        println("Username --> " + loggedUser!!.username)
-        /*if(loggedUser != null) {
-            Toast.makeText(context, "Hello ${loggedUser?.username}!", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Sign in FAILED", Toast.LENGTH_SHORT).show()
-        }*/
-        Toast.makeText(context, "Hello ${loggedUser?.username}!", Toast.LENGTH_SHORT).show()
+        set(signInInterface.signIn().username)
     }
+
+    user = User(username)
 }
 
+fun set(signInUser: String): Unit {
+    username = signInUser
+}
 
 
 @Preview(
