@@ -1,7 +1,6 @@
 package com.example.citylife
 
 import android.content.Context
-import android.os.AsyncTask
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -25,13 +24,14 @@ import androidx.compose.ui.unit.sp
 import com.example.citylife.model.user.User
 import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
-import kotlin.coroutines.suspendCoroutine
+import java.util.concurrent.Future
 
 class SignInActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -48,6 +48,7 @@ class SignInActivity : ComponentActivity() {
     }
 }
 
+lateinit var signedInUser: User
 
 @Composable
 fun SignInUI(context: Context) {
@@ -56,6 +57,15 @@ fun SignInUI(context: Context) {
     val passwordIconPainter = Icons.Default.Info
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
+
+    fun signInButtonClick(email: String, password: String): Future<User> {
+        return workerPool.submit(Callable {
+            SignIn(email, password).signIn()
+        })
+    }
+
+
 
     Column(
         modifier = Modifier
@@ -97,7 +107,10 @@ fun SignInUI(context: Context) {
         )
 
         OutlinedButton(
-            onClick = { signInButtonClick(email, password, context = context) },
+            onClick = {
+                signedInUser = signInButtonClick(email, password).get()
+                Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp, top = 10.dp)
@@ -109,27 +122,6 @@ fun SignInUI(context: Context) {
         }
     }
 }
-
-var username = ""
-lateinit var user: User
-
-fun signInButtonClick(email: String, password: String, context: Context) {
-
-    val signInInterface = SignIn(email, password)
-
-    val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
-    workerPool.submit {
-        set(signInInterface.signIn().username)
-    }
-}
-
-fun set(signInUser: String): Unit {
-    username = signInUser
-    user = User(username)
-    println(user.username)
-}
-
-
 @Preview(
     showBackground = true,
     showSystemUi = true
