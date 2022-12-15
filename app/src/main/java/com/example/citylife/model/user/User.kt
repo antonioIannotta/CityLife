@@ -99,13 +99,13 @@ data class User(val username: String) {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun newReport() =
-        Report(getSpecificReportPreference(), this.location, LocalDateTime.now(), textForReport, this.username)
+        Report(getSpecificReportPreference().toString(), this.location.toString(), LocalDateTime.now().toString(), textForReport, this.username)
 
     /**
      * metodo che invia una segnalazione al server.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sendReport() = ReportOperations().sendReport(newReport())
+    suspend fun sendReport() = ReportOperations().sendReport(newReport())
 
     //TODO: implementare la ricezione delle notifiche da parte dell'utente e la memorizzazione delle notifiche nel DB
 
