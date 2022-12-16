@@ -10,11 +10,16 @@ import org.bson.conversions.Bson
 
 class DatabaseOperations {
 
-    val db_address = "10.0.2.2" //indirizzo del DB
-    val port = 27017 //porta a cui è connesso il servizio
-    val databaseName = "CityLife" //nome del database
-    val userCollection = "User" //nome della collezione degli utenti all'interno del DB
-    val locationCollection = "Location"
+    //indirizzo del DB
+    private val db_address = "10.0.2.2"
+    //Porta per la connessione al database
+    private val port = 27017
+    //Nome del database
+    private val databaseName = "CityLife"
+    //Collezione degli utenti nel database
+    private val userCollection = "User"
+    //Collezione per l'aggiornamento della posizione nel database
+    private val locationCollection = "Location"
 
 
     /**
@@ -23,13 +28,13 @@ class DatabaseOperations {
     fun getDatabaseConnection(): MongoClient = MongoClient(db_address, port)
 
     /**
-     * Ritorna la collezione dal DB passata come argomento
+     * Ritorna la collezione passata come argomento
      */
     fun getCollectionFromDatabase(collectionName: String): MongoCollection<Document> =
         getDatabaseConnection().getDatabase(databaseName).getCollection(collectionName)
 
     /**
-     * Consente di inserire un utente all'interno della collezione degli utenti!
+     * Inserisce un utente nella collezione degli utenti
      */
     fun insertUser(documentComponents: Map<String, String>, username: String) {
         val document = Document(username, documentComponents)
@@ -37,20 +42,12 @@ class DatabaseOperations {
     }
 
     /**
-     * Trova all'interno della collezione degli utenti l'utente con lo specifico username
-     */
-    fun readUserByUsername(username: String): Document? =
-        getCollectionFromDatabase(userCollection).find().first {
-                document -> document.keys.contains(username)
-        }
-
-    /**
      * Ritorna tutti i documenti presenti all'interno della collezione degli utenti
      */
     fun readAllUsers() = getCollectionFromDatabase(userCollection).find()
 
     /**
-     * Inserisce o aggiorna la posizione e la distanza di interesse all'interno della collezione Location
+     * Inserisce o aggiorna la posizione e la distanza di interesse per un certo utente
      */
     fun insertOrUpdateLocationAndDistance(username: String, locationAndDistance: Map<String, String>) {
         val filter = Filters.eq("Username", username)
@@ -60,7 +57,6 @@ class DatabaseOperations {
             entry -> updates.add(Updates.set(entry.key, entry.value))
         }
         val options = UpdateOptions().upsert(true)
-
 
         getCollectionFromDatabase(locationCollection)
             .updateOne(filter, updates, options)
