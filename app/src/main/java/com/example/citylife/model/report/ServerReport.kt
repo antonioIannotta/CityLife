@@ -26,3 +26,5 @@ data class ServerReport(val type: String, val location: String,
         return Report(this.type, this.location, this.localDateTime, this.text, username)
     }
 }
+
+//TODO: discutere su questa classe

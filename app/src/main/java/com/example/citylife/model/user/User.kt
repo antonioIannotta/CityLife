@@ -104,15 +104,24 @@ data class User(val username: String) {
      * per la quale è interessato a ricevere le segnalazioni
      */
     fun updateLocationOnDB() =
-        DatabaseOperations().insertOrUpdateLocationAndDistance(this.username, mapOf(
+        DatabaseOperations()
+            .insertOrUpdateLocationAndDistance(this.username, mapOf(
             "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
             "Distance" to getDistance().toString()
         ))
 
-    fun strLongitude(location: Location): String =
+
+    /**
+     * Funzione che converte la longitudine in stringa
+     */
+    private fun strLongitude(location: Location): String =
         Location.convert(location.longitude, Location.FORMAT_DEGREES)
 
-    fun strLatitude(location: Location): String =
+
+    /**
+     * Funzione che converte la latitudine in stringa
+     */
+    private fun strLatitude(location: Location): String =
         Location.convert(location.latitude, Location.FORMAT_DEGREES)
 
     /**
@@ -131,7 +140,8 @@ data class User(val username: String) {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun sendReport() =
-        ClientDatabaseOperations().insertReport(newReport())
+        ClientDatabaseOperations()
+            .insertReport(newReport())
 
     /**
      * Funzione che si occupa di recuperare le notifiche di interesse per l'utente
@@ -140,8 +150,9 @@ data class User(val username: String) {
         val workerPool = Executors.newSingleThreadExecutor()
         workerPool.submit(Callable {
             while (true) {
-                val lastReportInDB = ServerDatabaseOperations().composeReportFromDocument(
-                    ServerDatabaseOperations().getServerCollection().find().first())
+                var lastReportInDB = ServerDatabaseOperations().composeReportFromDocument(
+                    ServerDatabaseOperations().getServerCollection().find().first()
+                )
 
                 if (lastReceivedReport.equals(lastReportInDB)) {
                     continue

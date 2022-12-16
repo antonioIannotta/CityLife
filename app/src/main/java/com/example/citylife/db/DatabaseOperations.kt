@@ -21,30 +21,24 @@ class DatabaseOperations {
     //Collezione per l'aggiornamento della posizione nel database
     private val locationCollection = "Location"
 
-
-    /**
-     * Ritorna la connessione al database
-     */
-    fun getDatabaseConnection(): MongoClient = MongoClient(db_address, port)
-
     /**
      * Ritorna la collezione passata come argomento
      */
     fun getCollectionFromDatabase(collectionName: String): MongoCollection<Document> =
-        getDatabaseConnection().getDatabase(databaseName).getCollection(collectionName)
+        MongoClient(db_address, port).getDatabase(databaseName).getCollection(collectionName)
 
     /**
      * Inserisce un utente nella collezione degli utenti
      */
-    fun insertUser(documentComponents: Map<String, String>, username: String) {
-        val document = Document(username, documentComponents)
-        getCollectionFromDatabase(userCollection).insertOne(document)
-    }
+    fun insertUser(documentComponents: Map<String, String>, username: String) =
+        getCollectionFromDatabase(userCollection)
+            .insertOne(Document(username, documentComponents))
 
     /**
      * Ritorna tutti i documenti presenti all'interno della collezione degli utenti
      */
-    fun readAllUsers() = getCollectionFromDatabase(userCollection).find()
+    fun readAllUsers() =
+        getCollectionFromDatabase(userCollection).find()
 
     /**
      * Inserisce o aggiorna la posizione e la distanza di interesse per un certo utente
@@ -60,7 +54,6 @@ class DatabaseOperations {
 
         getCollectionFromDatabase(locationCollection)
             .updateOne(filter, updates, options)
-
     }
 
 }

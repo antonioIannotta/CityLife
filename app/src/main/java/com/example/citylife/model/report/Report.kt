@@ -1,8 +1,5 @@
 package com.example.citylife.model.report
 
-import android.location.Location
-import java.time.LocalDateTime
-
 /**
  * Classe che si occupa di comporre una segnalazione, composta da:
  * tipologia di segnalazione,
