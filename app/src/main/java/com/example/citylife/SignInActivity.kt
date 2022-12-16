@@ -1,6 +1,7 @@
 package com.example.citylife
 
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -21,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import com.example.citylife.model.user.User
 import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
@@ -108,7 +110,14 @@ fun SignInUI(context: Context) {
             onClick = {
                 signedInUser = signInButtonClick(email, password).get()
                 Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
-            },
+                if( signedInUser.username != "" ) {
+                    val mapActivityIntent = Intent(context, MapActivity::class.java)
+                    mapActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    mapActivityIntent.putExtra("user", signedInUser.username) // Valutare passaggio oggetto intero serializzato o formato GSON
+
+                    ContextCompat.startActivity(context, mapActivityIntent, null)
+                }
+             },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp, top = 10.dp)
