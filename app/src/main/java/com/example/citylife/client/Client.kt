@@ -11,7 +11,7 @@ import org.json.JSONObject
 
 class Client {
 
-    val serverUrl = ""
+    /*val serverUrl = "127.0.0.1:8080/req"
 
     suspend fun sendReport(report: Report) {
 
@@ -56,5 +56,5 @@ class Client {
         val username = jsonReport["Username"].toString()
 
         return Report(type, location, localDateTime, text, username)
-    }
+    }*/
 }
