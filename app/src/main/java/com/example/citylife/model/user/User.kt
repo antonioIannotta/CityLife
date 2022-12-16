@@ -3,11 +3,15 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.citylife.db.ClientDatabaseOperations
 import com.example.citylife.db.DatabaseOperations
+import com.example.citylife.db.ServerDatabaseOperations
 import com.example.citylife.model.report.Report
-import com.example.citylife.model.report.ReportOperations
 import com.example.citylife.model.report.ReportType
+import com.example.citylife.model.report.ServerReport
 import java.time.LocalDateTime
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 
 /**
  * classe che rappresenta uno specifico utente.
@@ -18,6 +22,8 @@ data class User(val username: String) {
     private var reportPreferences = mutableListOf<ReportType>() //tipologie di segnalazione alle quali l'utente è interessato
     private var location = Location("") //posizione dell'utente
     private var textForReport: String = "" //testo per la segnalazione
+    var lastReceivedReport = ServerReport("", "", "", "", "")
+    lateinit var notification: Report
 
     /**
      * consente di modificare la distanza di interesse.
@@ -105,9 +111,27 @@ data class User(val username: String) {
      * metodo che invia una segnalazione al server.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun sendReport() = ReportOperations().sendReport(newReport())
+    fun sendReport() = ClientDatabaseOperations().insertReport(newReport())
 
-    //TODO: implementare la ricezione delle notifiche da parte dell'utente e la memorizzazione delle notifiche nel DB
+    fun receiveReport() {
+        val workerPool = Executors.newSingleThreadExecutor()
+        workerPool.submit(Callable {
+            while (true) {
+                val lastReportInDB = ServerDatabaseOperations().composeReportFromDocument(
+                    ServerDatabaseOperations().getServerCollection().find().first())
+
+                if (lastReceivedReport.equals(lastReportInDB)) {
+                    continue
+                } else {
+                    if (lastReportInDB.listOfUsername.contains(this.username)) {
+                        lastReceivedReport = lastReportInDB
+                        notification = lastReceivedReport.toReport(this.username)
+                    }
+                }
+            }
+        })
+    }
+
 
 
 
