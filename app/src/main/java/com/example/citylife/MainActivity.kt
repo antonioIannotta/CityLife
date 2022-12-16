@@ -40,6 +40,9 @@ fun SignUpSignIn(context: Context) {
         Button(onClick = { startActivity(context, intent, null) }) {
 
         }
+        Button(onClick = { startActivity(context, intent, null) }) {
+
+        }
     }
 }
 

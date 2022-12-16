@@ -65,8 +65,6 @@ fun SignInUI(context: Context) {
         })
     }
 
-
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
