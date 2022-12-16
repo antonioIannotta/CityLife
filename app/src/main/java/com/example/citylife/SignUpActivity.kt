@@ -1,7 +1,9 @@
 package com.example.citylife
 
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -20,9 +22,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.citylife.model.user.User
 import com.example.citylife.signUp.SignUp
 import com.example.citylife.ui.theme.CityLifeTheme
-import java.util.*
+import java.util.concurrent.Callable
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import java.util.concurrent.Future
 
 class SignUpActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -41,6 +47,8 @@ class SignUpActivity : ComponentActivity() {
     }
 }
 
+lateinit var signedUpUser: User
+
 @Composable
 fun SignUpUI(context: Context) {
 
@@ -48,9 +56,19 @@ fun SignUpUI(context: Context) {
     val passwordIconPainter = Icons.Default.Info
     var surname by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
-    var dateOfBirth by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
+
+    fun signUpButtonClick(name: String, surname: String, email: String, password: String): Future<User> {
+        return workerPool.submit(Callable {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                SignUp(name, surname, email, password).signUp()
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
+        })
+    }
 
     Column(
         modifier = Modifier
@@ -59,6 +77,7 @@ fun SignUpUI(context: Context) {
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         Text(
             text = "Sign up",
             textAlign = TextAlign.Left,
@@ -68,26 +87,25 @@ fun SignUpUI(context: Context) {
                 .padding(bottom = 20.dp)
 
         )
+        Row() {
+            OutlinedTextField(
+                value = name,
+                onValueChange = { name = it },
+                label = { Text("name") },
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(bottom = 10.dp, end = 5.dp, top = 10.dp),
+            )
 
-        OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
-            label = { Text("name") },
-            leadingIcon = { Icon(emailIconPainter, contentDescription = "name") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp, top = 10.dp),
-        )
-
-        OutlinedTextField(
-            value = surname,
-            onValueChange = { surname = it },
-            label = { Text("surname") },
-            leadingIcon = { Icon(emailIconPainter, contentDescription = "surname") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 10.dp, top = 10.dp),
-        )
+            OutlinedTextField(
+                value = surname,
+                onValueChange = { surname = it },
+                label = { Text("surname") },
+                modifier = Modifier
+                    .weight(1F)
+                    .padding(start = 5.dp, bottom = 10.dp, top = 10.dp),
+            )
+        }
 
         OutlinedTextField(
             value = email,
@@ -112,7 +130,10 @@ fun SignUpUI(context: Context) {
         )
 
         OutlinedButton(
-            onClick = { SignUp(name, surname, email, password) },
+            onClick = {
+                signedUpUser = signUpButtonClick(name, surname, email, password).get()
+                Toast.makeText(context, "Username ---> " + signedUpUser.username, Toast.LENGTH_LONG).show()
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 10.dp, top = 10.dp)
