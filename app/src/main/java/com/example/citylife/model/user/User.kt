@@ -18,49 +18,62 @@ import java.util.concurrent.Executors
  */
 data class User(val username: String) {
 
-    private var distance: Float = 0.0f //distanza selezionata dall'utente per la quale è interessato a ricevere segnalazioni
-    private var reportPreferences = mutableListOf<ReportType>() //tipologie di segnalazione alle quali l'utente è interessato
-    private var location = Location("") //posizione dell'utente
-    private var textForReport: String = "" //testo per la segnalazione
+    //Distanza selezionata dall'utente per la quale è interessato a ricevere segnalazioni
+    private var distance: Float = 0.0f
+    //Tipologie di segnalazione alle quali l'utente è interessato
+    private var reportPreferences = mutableListOf<ReportType>()
+    //Posizione dell'utente
+    private var location = Location("")
+    //Testo per la segnalazione
+    private var textForReport: String = ""
+    //Ultima segnalazione ricevuta
     var lastReceivedReport = ServerReport("", "", "", "", "")
-    lateinit var notification: Report
+    //Lista delle notifiche che sono di interesse per l'utente
+    lateinit var notificationList: MutableList<Report>
 
     /**
-     * consente di modificare la distanza di interesse.
+     *Funzione che consente di modificare la distanza di interesse.
      */
     fun changeDistance(newDistance: Float) {
         distance = newDistance
     }
 
     /**
-     * ritorna la distanza
+     *Funzione che ritorna la distanza
      */
-    fun getDistance() = distance
+    fun getDistance() =
+        distance
 
     /**
-     * aggiunge una tipologia di segnalazione a quelle di interesse
+     *Funzione che aggiunge una tipologia di segnalazione a quelle di interesse
      */
-    fun addReportToPreferences(report: ReportType) = reportPreferences.add(report)
+    fun addReportToPreferences(report: ReportType) =
+        reportPreferences.add(report)
 
     /**
-     * ritorna le tipologie di segnalazioni a cui l'utente è effettivamente interessato
+     *Funzione che ritorna le tipologie di segnalazioni a cui l'utente è effettivamente interessato
      */
-    fun getReportPreferences() = reportPreferences
+    fun getReportPreferences() =
+        reportPreferences
 
     /**
-     * seleziona una specifica tipologia di segnalazione tra quelle a cui l'utente è interessato
+     *Funzione che seleziona una specifica tipologia di
+     * segnalazione tra quelle a cui l'utente è interessato
      */
-    fun getSpecificReportPreference(specificReportType: String = "") = getReportPreferences().filter {
-        reportType -> reportType.name == specificReportType
-    }.first()
+    fun getSpecificReportPreference(specificReportType: String = "") =
+        getReportPreferences().filter {
+            reportType -> reportType.name == specificReportType
+        }.first()
 
     /**
-     * rimuove una tipologia di segnalazione tra quelle a cui l'utente è effettivamente interessato
+     *Funzione che rimuove una tipologia di segnalazione
+     * tra quelle a cui l'utente è effettivamente interessato
      */
-    fun removeReportTypeFromPreferences(report: ReportType) = reportPreferences.remove(report)
+    fun removeReportTypeFromPreferences(report: ReportType) =
+        reportPreferences.remove(report)
 
     /**
-     * imposta la nuova posizione per l'utente
+     *Funzione che imposta la nuova posizione per l'utente
      */
     @JvmName("setLocation1")
     fun setLocation(location: Location)  {
@@ -68,25 +81,27 @@ data class User(val username: String) {
     }
 
     /**
-     * ritorna la posizione dell'utente
+     * Funzione che ritorna la posizione dell'utente
      */
-    fun getLocation() = this.location
+    fun getLocation() =
+        this.location
 
     /**
-     * imposta il testo da inserire all'interno della segnalazione
+     * Funzione che imposta il testo da inserire all'interno della segnalazione
      */
     fun setTextForReport(newText: String) {
         this.textForReport = newText
     }
 
     /**
-     * ritorna il testo inserito all'interno della segnalazione
+     * Funzione che ritorna il testo inserito all'interno della segnalazione
      */
-    fun getTextForReport() = this.textForReport
+    fun getTextForReport() =
+        this.textForReport
 
     /**
-     * aggiorna la posizione dell'utente e la distanza per la quale è interessato a ricevere le
-     * segnalazioni
+     * Funzione che aggiorna la posizione dell'utente e la distanza
+     * per la quale è interessato a ricevere le segnalazioni
      */
     fun updateLocationOnDB() =
         DatabaseOperations().insertOrUpdateLocationAndDistance(this.username, mapOf(
@@ -101,18 +116,26 @@ data class User(val username: String) {
         Location.convert(location.latitude, Location.FORMAT_DEGREES)
 
     /**
-     * metodo factory per la creazione di una nuova segnalazione
+     * Funzione factory per la creazione di una nuova segnalazione
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun newReport() =
-        Report(getSpecificReportPreference().toString(), this.location.toString(), LocalDateTime.now().toString(), textForReport, this.username)
+        Report(getSpecificReportPreference().toString(),
+            this.location.toString(),
+            LocalDateTime.now().toString(),
+            textForReport,
+            this.username)
 
     /**
-     * metodo che invia una segnalazione al server.
+     * Funzione che invia una segnalazione al server.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sendReport() = ClientDatabaseOperations().insertReport(newReport())
+    fun sendReport() =
+        ClientDatabaseOperations().insertReport(newReport())
 
+    /**
+     * Funzione che si occupa di recuperare le notifiche di interesse per l'utente
+     */
     fun receiveReport() {
         val workerPool = Executors.newSingleThreadExecutor()
         workerPool.submit(Callable {
@@ -125,7 +148,7 @@ data class User(val username: String) {
                 } else {
                     if (lastReportInDB.listOfUsername.contains(this.username)) {
                         lastReceivedReport = lastReportInDB
-                        notification = lastReceivedReport.toReport(this.username)
+                        notificationList.add(lastReceivedReport.toReport(this.username))
                     }
                 }
             }

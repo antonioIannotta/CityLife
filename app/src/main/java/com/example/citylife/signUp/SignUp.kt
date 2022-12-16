@@ -12,13 +12,13 @@ data class SignUp(val name: String, val surname: String,
                   val email: String, val password: String) {
 
     /**
-     * crea lo username a partire da nome, cognome ed email
+     *Funzione che crea lo username a partire da nome, cognome ed email
      */
     private val username =  MessageDigest.getInstance("MD5")
         .digest((name + surname + email).toByteArray()).toString()
 
     /**
-     * mappa dei valori che vengono memorizzati all'interno della collezione User
+     *Funzione che mappa dei valori che vengono memorizzati all'interno della collezione User
      */
     private val signUpMapOfValues = mapOf<String, String>(
         "Name" to name,
@@ -28,7 +28,7 @@ data class SignUp(val name: String, val surname: String,
     )
 
     /**
-     * metodo per la registrazione e memorizzazione dei dati nel DB
+     *Funzioen che si occupa della registrazione e memorizzazione dei dati nel DB
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun signUp(): User? {
@@ -47,15 +47,15 @@ data class SignUp(val name: String, val surname: String,
     }
 
     /**
-     * verifica che la mail inserita non sia già stata utilizzata
+     *Funzione che verifica che la mail inserita non sia già stata utilizzata
      */
     fun isEmailUnique(email: String): Boolean {
         return check(email)
     }
 
     /**
-     * effettua la verificad ella presenza all'interno della collezione di un valore passato come
-     * parametro
+     *Funzione che effettua la verificad ella presenza all'interno
+     * della collezione di un valore passato come parametro
      */
     fun check(value: String): Boolean {
         return DatabaseOperations().readAllUsers().count {
@@ -63,5 +63,3 @@ data class SignUp(val name: String, val surname: String,
         } == 0
     }
 }
-
-//TODO: TEST + cifrare la password

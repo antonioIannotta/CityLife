@@ -6,7 +6,7 @@ import com.example.citylife.model.user.User
 class SignIn(val email: String, val password: String) {
 
     /**
-     * effettua il login dell'utente
+     *Funzione che effettua il login dell'utente
      */
     fun signIn(): User {
         var retrievedUsername = ""
@@ -18,7 +18,7 @@ class SignIn(val email: String, val password: String) {
     }
 
     /**
-     * Verifica che la password inserita sia effettivamente quella associata all'utente
+     *Funzione che verifica che la password inserita sia effettivamente quella associata all'utente
      */
     private fun checkPasswordWithEmail(email: String, password: String): Boolean {
         return DatabaseOperations().readAllUsers().count { 
@@ -28,14 +28,14 @@ class SignIn(val email: String, val password: String) {
     }
 
     /**
-     * verifica che l'email inserita esista
+     *Funzione che verifica che l'email inserita esista
      */
     private fun checkEmailExists(email: String): Boolean =
         DatabaseOperations().readAllUsers()
             .count { document -> document.entries.toString().contains(email) } == 1
 
     /**
-     * recupera lo username con una certa email
+     *Funzione che recupera lo username con una certa email
      */
     private fun retrieveUsername(email: String): String =
         DatabaseOperations().readAllUsers()
@@ -43,5 +43,3 @@ class SignIn(val email: String, val password: String) {
                     document -> document.entries.toString().contains(email)
             }.first().keys.last()
 }
-
-//TODO: TEST
