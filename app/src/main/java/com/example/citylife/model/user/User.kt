@@ -159,7 +159,9 @@ data class User(val username: String) {
                 } else {
                     if (lastReportInDB.listOfUsername.contains(this.username)) {
                         lastReceivedReport = lastReportInDB
-                        notificationList.add(lastReceivedReport.toReport(this.username))
+                        if (reportPreferences.contains(ReportType.valueOf(lastReportInDB.type))) {
+                            notificationList.add(lastReceivedReport.toReport(this.username))
+                        }
                     }
                 }
             }
