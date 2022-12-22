@@ -41,5 +41,5 @@ class SignIn(val email: String, val password: String) {
         DatabaseOperations().readAllUsers()
             .filter {
                     document -> document.entries.toString().contains(email)
-            }.first().keys.last()
+            }.first().getString("Username")
 }

@@ -22,9 +22,13 @@ data class SignUp(val name: String, val surname: String,
      */
     private val signUpMapOfValues = mapOf<String, String>(
         "Name" to name,
+        "Username" to username,
+        "Distance" to 0f.toString(),
+        "Location" to "",
         "Surname" to surname,
         "Email" to email,
-        "Password" to password
+        "Password" to password,
+        "ReportPreference" to ""
     )
 
     /**
@@ -39,7 +43,7 @@ data class SignUp(val name: String, val surname: String,
             FirebaseEmailOperations().sendEmail(email)
             if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
                 DatabaseOperations()
-                    .insertUser(signUpMapOfValues, username)
+                    .insertUser(signUpMapOfValues)
                 user = User(username)
             }
         }

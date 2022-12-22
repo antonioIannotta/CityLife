@@ -30,9 +30,9 @@ class DatabaseOperations {
     /**
      * Inserisce un utente nella collezione degli utenti
      */
-    fun insertUser(documentComponents: Map<String, String>, username: String) =
+    fun insertUser(documentComponents: Map<String, String>) =
         getCollectionFromDatabase(userCollection)
-            .insertOne(Document(username, documentComponents))
+            .insertOne(Document(documentComponents))
 
     /**
      * Ritorna tutti i documenti presenti all'interno della collezione degli utenti
@@ -55,5 +55,10 @@ class DatabaseOperations {
         getCollectionFromDatabase(locationCollection)
             .updateOne(filter, updates, options)
     }
+
+    fun updateLocationInUserCollection(collectionName: String, username: String, location: String){
+
+    }
+
 
 }
