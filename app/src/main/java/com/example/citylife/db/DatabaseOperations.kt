@@ -83,7 +83,7 @@ class DatabaseOperations {
         reportPreferences = reportPreferencesString.dropLast(1)
         val reportPreferencesList = emptyList<ReportType>().toMutableList()
         reportPreferences.split(",").forEach {
-                element -> reportPreferencesList.add(ReportType.valueOf(element))
+                element -> reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
         }
         return reportPreferencesList
     }
