@@ -110,7 +110,7 @@ fun SignInUI(context: Context) {
             onClick = {
                 signedInUser = signInButtonClick(email, password).get()
                 Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
-                if( signedInUser.username != "" ) {
+                if ( signedInUser.username != "" ) {
                     val mapActivityIntent = Intent(context, MapActivity::class.java)
                     mapActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                     mapActivityIntent.putExtra("user", signedInUser.username) // Valutare passaggio oggetto intero serializzato o formato GSON
