@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import com.example.citylife.model.user.User
 import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
+import com.example.citylife.utils.UserSerialization
 import kotlinx.coroutines.launch
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
@@ -109,13 +110,16 @@ fun SignInUI(context: Context) {
         OutlinedButton(
             onClick = {
                 signedInUser = signInButtonClick(email, password).get()
-                Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
                 if ( signedInUser.username != "" ) {
-                    val mapActivityIntent = Intent(context, MapActivity::class.java)
+                    Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
+
+                    val mapActivityIntent = Intent(context, ReportsListActivity::class.java)
                     mapActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    mapActivityIntent.putExtra("user", signedInUser.username) // Valutare passaggio oggetto intero serializzato o formato GSON
+                    mapActivityIntent.putExtra("user", UserSerialization().serialize(signedInUser)) // Valutare passaggio oggetto intero serializzato o formato GSON
 
                     ContextCompat.startActivity(context, mapActivityIntent, null)
+                } else {
+                    Toast.makeText(context, "AUTENTICAZIONE FALLITA", Toast.LENGTH_LONG).show()
                 }
             },
             modifier = Modifier

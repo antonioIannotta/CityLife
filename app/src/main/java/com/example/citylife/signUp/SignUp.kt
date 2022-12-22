@@ -1,8 +1,10 @@
 package com.example.citylife.signUp
 
+import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.citylife.db.DatabaseOperations
+import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.example.citylife.signUp.firebase.FirebaseEmailOperations
 import java.security.MessageDigest
@@ -40,12 +42,12 @@ data class SignUp(val name: String, val surname: String,
         var user: User? = null
 
         if (isEmailUnique(email)) {
-            FirebaseEmailOperations().sendEmail(email)
-            if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
+            //FirebaseEmailOperations().sendEmail(email)
+            //if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
                 DatabaseOperations()
                     .insertUser(signUpMapOfValues)
-                user = User(username)
-            }
+                user = User(username, 0.0f, Location(""), emptyList<ReportType>().toMutableList())
+            //}
         }
         return user
     }

@@ -131,14 +131,14 @@ data class User(val username: String, var distance: Float = 0.0f,
     /**
      * Funzione che converte la longitudine in stringa
      */
-    private fun strLongitude(location: Location): String =
+    fun strLongitude(location: Location): String =
         Location.convert(location.longitude, Location.FORMAT_DEGREES)
 
 
     /**
      * Funzione che converte la latitudine in stringa
      */
-    private fun strLatitude(location: Location): String =
+    fun strLatitude(location: Location): String =
         Location.convert(location.latitude, Location.FORMAT_DEGREES)
 
     /**
