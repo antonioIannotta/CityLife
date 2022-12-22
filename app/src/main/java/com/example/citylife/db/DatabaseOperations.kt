@@ -76,14 +76,18 @@ class DatabaseOperations {
     }
 
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
-        if (reportPreferencesString == "[]") {
-            return emptyList<ReportType>().toMutableList()
-        }
+        lateinit var reportPreferencesList: MutableList<ReportType>
+
         var reportPreferences = reportPreferencesString.drop(1)
         reportPreferences = reportPreferencesString.dropLast(1)
-        val reportPreferencesList = emptyList<ReportType>().toMutableList()
-        reportPreferences.split(",").forEach {
-                element -> reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
+
+        if (reportPreferences.isBlank() || reportPreferences.isEmpty()) {
+            reportPreferencesList = emptyList<ReportType>().toMutableList()
+        }else {
+            reportPreferencesList = emptyList<ReportType>().toMutableList()
+            reportPreferences.split(",").forEach {
+                    element -> reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
+            }
         }
         return reportPreferencesList
     }
