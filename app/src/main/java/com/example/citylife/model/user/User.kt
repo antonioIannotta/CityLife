@@ -9,6 +9,8 @@ import com.example.citylife.db.ServerDatabaseOperations
 import com.example.citylife.model.report.Report
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.report.ServerReport
+import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Updates
 import java.time.LocalDateTime
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -16,14 +18,11 @@ import java.util.concurrent.Executors
 /**
  * classe che rappresenta uno specifico utente.
  */
-data class User(val username: String) {
+data class User(val username: String, var distance: Float = 0.0f,
+                var location: Location = Location(""),
+                var reportPreferences: MutableList<ReportType> = emptyList<ReportType>().toMutableList()
+) {
 
-    //Distanza selezionata dall'utente per la quale è interessato a ricevere segnalazioni
-    private var distance: Float = 0.0f
-    //Tipologie di segnalazione alle quali l'utente è interessato
-    private var reportPreferences = mutableListOf<ReportType>()
-    //Posizione dell'utente
-    private var location = Location("")
     //Testo per la segnalazione
     private var textForReport: String = ""
     //Ultima segnalazione ricevuta
@@ -36,23 +35,35 @@ data class User(val username: String) {
      */
     fun changeDistance(newDistance: Float) {
         distance = newDistance
+        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
+            Filters.eq("Username", this.username),
+            Updates.set("Distance", this.distance.toString())
+        )
     }
 
     /**
      *Funzione che ritorna la distanza
      */
+    @JvmName("getDistance1")
     fun getDistance() =
         distance
 
     /**
      *Funzione che aggiunge una tipologia di segnalazione a quelle di interesse
      */
-    fun addReportToPreferences(report: ReportType) =
+    fun addReportToPreferences(report: ReportType) {
+
         reportPreferences.add(report)
+        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
+            Filters.eq("Username", this.username),
+            Updates.set("ReportPreferences", this.reportPreferences.toString())
+        )
+    }
 
     /**
      *Funzione che ritorna le tipologie di segnalazioni a cui l'utente è effettivamente interessato
      */
+    @JvmName("getReportPreferences1")
     fun getReportPreferences() =
         reportPreferences
 
@@ -62,7 +73,7 @@ data class User(val username: String) {
      */
     fun getSpecificReportPreference(specificReportType: String = "") =
         getReportPreferences().filter {
-            reportType -> reportType.name == specificReportType
+                reportType -> reportType.name == specificReportType
         }.first()
 
     /**
@@ -78,11 +89,17 @@ data class User(val username: String) {
     @JvmName("setLocation1")
     fun setLocation(location: Location)  {
         this.location = location
+        val locationString = strLatitude(location) + " - " + strLongitude(location)
+        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
+            Filters.eq("Username", this.username),
+            Updates.set("Location", locationString)
+        )
     }
 
     /**
      * Funzione che ritorna la posizione dell'utente
      */
+    @JvmName("getLocation1")
     fun getLocation() =
         this.location
 
@@ -106,9 +123,9 @@ data class User(val username: String) {
     fun updateLocationOnDB() =
         DatabaseOperations()
             .insertOrUpdateLocationAndDistance(this.username, mapOf(
-            "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
-            "Distance" to getDistance().toString()
-        ))
+                "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
+                "Distance" to getDistance().toString()
+            ))
 
 
     /**

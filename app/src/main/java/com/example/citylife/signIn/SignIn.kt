@@ -9,20 +9,20 @@ class SignIn(val email: String, val password: String) {
      *Funzione che effettua il login dell'utente
      */
     fun signIn(): User {
-        var retrievedUsername = ""
+        lateinit var user: User
         if (checkEmailExists(email) && checkPasswordWithEmail(email, password)) {
-            retrievedUsername = retrieveUsername(email)
+            user = DatabaseOperations().retrieveUser(retrieveUsername(email))
         }
 
-        return User(retrievedUsername)
+        return user
     }
 
     /**
      *Funzione che verifica che la password inserita sia effettivamente quella associata all'utente
      */
     private fun checkPasswordWithEmail(email: String, password: String): Boolean {
-        return DatabaseOperations().readAllUsers().count { 
-            document -> document.entries.toString().contains(email) && 
+        return DatabaseOperations().readAllUsers().count {
+                document -> document.entries.toString().contains(email) &&
                 document.entries.toString().contains(password)
         } == 1
     }
@@ -41,5 +41,5 @@ class SignIn(val email: String, val password: String) {
         DatabaseOperations().readAllUsers()
             .filter {
                     document -> document.entries.toString().contains(email)
-            }.first().keys.last()
+            }.first().getString("Username")
 }
