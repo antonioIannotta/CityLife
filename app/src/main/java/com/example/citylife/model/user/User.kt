@@ -28,7 +28,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     //Ultima segnalazione ricevuta
     var lastReceivedReport = ServerReport("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
-    lateinit var notificationList: MutableList<Report>
+    var notificationList = emptyList<Report>().toMutableList()
 
     /**
      *Funzione che consente di modificare la distanza di interesse.
