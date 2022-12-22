@@ -78,12 +78,11 @@ class DatabaseOperations {
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
         lateinit var reportPreferencesList: MutableList<ReportType>
 
-        var reportPreferences = reportPreferencesString.drop(1)
-        reportPreferences = reportPreferencesString.dropLast(1)
-
-        if (reportPreferences.isBlank() || reportPreferences.isEmpty()) {
+        if (reportPreferencesString == "[]") {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
         }else {
+            var reportPreferences = reportPreferencesString.drop(1)
+            reportPreferences = reportPreferencesString.dropLast(1)
             reportPreferencesList = emptyList<ReportType>().toMutableList()
             reportPreferences.split(",").forEach {
                     element -> reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
