@@ -30,7 +30,7 @@ data class SignUp(val name: String, val surname: String,
         "Surname" to surname,
         "Email" to email,
         "Password" to password,
-        "ReportPreference" to ""
+        "ReportPreference" to "[]"
     )
 
     /**
