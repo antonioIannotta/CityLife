@@ -1,5 +1,9 @@
 package com.example.citylife.db
 
+import android.location.Location
+import com.example.citylife.model.report.Report
+import com.example.citylife.model.report.ReportType
+import com.example.citylife.model.user.User
 import com.mongodb.MongoClient
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
@@ -56,9 +60,38 @@ class DatabaseOperations {
             .updateOne(filter, updates, options)
     }
 
-    fun updateLocationInUserCollection(collectionName: String, username: String, location: String){
-
+    fun retrieveUser(username: String): User {
+        val userDocument = getCollectionFromDatabase(userCollection)
+            .find().filter(Filters.eq("Username", username)).first()
+        return composeUser(userDocument)
     }
 
+    private fun composeUser(userDocument: Document): User {
+        val username = userDocument["Username"].toString()
+        val distance = userDocument["Distance"].toString().toFloat()
+        val location = returnLocation(userDocument["Location"].toString())
+        val reportPreferences = returnReportPreferences(userDocument["ReportPreferences"].toString())
 
+        return User(username, distance, location, reportPreferences)
+    }
+
+    private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
+        var reportPreferences = reportPreferencesString.drop(1)
+        reportPreferences = reportPreferencesString.dropLast(1)
+        val reportPreferencesList = emptyList<ReportType>().toMutableList()
+        reportPreferences.split(",").forEach {
+            element -> reportPreferencesList.add(ReportType.valueOf(element))
+        }
+        return reportPreferencesList
+    }
+
+    private fun returnLocation(userLocation: String): Location {
+        val latitude = userLocation.split(" - ")[0]
+        val longitude = userLocation.split(" - ")[1]
+        val location = Location("")
+        location.latitude = latitude.toDouble()
+        location.longitude = longitude.toDouble()
+
+        return location
+    }
 }

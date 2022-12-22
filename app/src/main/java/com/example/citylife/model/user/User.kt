@@ -56,7 +56,7 @@ data class User(val username: String, var distance: Float = 0.0f,
         reportPreferences.add(report)
         DatabaseOperations().getCollectionFromDatabase("User").updateOne(
             Filters.eq("Username", this.username),
-            Updates.set("ReportPreferences", this.reportPreferences)
+            Updates.set("ReportPreferences", this.reportPreferences.toString())
         )
     }
 

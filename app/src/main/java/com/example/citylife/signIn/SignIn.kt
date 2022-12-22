@@ -9,12 +9,12 @@ class SignIn(val email: String, val password: String) {
      *Funzione che effettua il login dell'utente
      */
     fun signIn(): User {
-        var retrievedUsername = ""
+        lateinit var user: User
         if (checkEmailExists(email) && checkPasswordWithEmail(email, password)) {
-            retrievedUsername = retrieveUsername(email)
+            user = DatabaseOperations().retrieveUser(retrieveUsername(email))
         }
 
-        return User(retrievedUsername)
+        return user
     }
 
     /**
