@@ -76,6 +76,9 @@ class DatabaseOperations {
     }
 
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
+        if (reportPreferencesString == "[]") {
+            return emptyList<ReportType>().toMutableList()
+        }
         var reportPreferences = reportPreferencesString.drop(1)
         reportPreferences = reportPreferencesString.dropLast(1)
         val reportPreferencesList = emptyList<ReportType>().toMutableList()
@@ -86,6 +89,9 @@ class DatabaseOperations {
     }
 
     private fun returnLocation(userLocation: String): Location {
+        if (userLocation == "") {
+            return Location("")
+        }
         val latitude = userLocation.split(" - ")[0]
         val longitude = userLocation.split(" - ")[1]
         val location = Location("")
