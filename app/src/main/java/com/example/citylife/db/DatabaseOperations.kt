@@ -78,7 +78,7 @@ class DatabaseOperations {
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
         lateinit var reportPreferencesList: MutableList<ReportType>
 
-        if (reportPreferencesString == "[]") {
+        if (reportPreferencesString == null) {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
         }else {
             var reportPreferences = reportPreferencesString.drop(1)
