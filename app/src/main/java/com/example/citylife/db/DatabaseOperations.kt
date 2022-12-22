@@ -70,7 +70,7 @@ class DatabaseOperations {
         val username = userDocument["Username"].toString()
         val distance = userDocument["Distance"].toString().toFloat()
         val location = returnLocation(userDocument["Location"].toString())
-        val reportPreferences = returnReportPreferences(userDocument["ReportPreferences"].toString())
+        val reportPreferences = returnReportPreferences(userDocument["ReportPreference"].toString())
 
         return User(username, distance, location, reportPreferences)
     }
@@ -78,7 +78,7 @@ class DatabaseOperations {
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
         lateinit var reportPreferencesList: MutableList<ReportType>
 
-        if (reportPreferencesString == null) {
+        if (reportPreferencesString == "[]") {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
         }else {
             var reportPreferences = reportPreferencesString.drop(1)
