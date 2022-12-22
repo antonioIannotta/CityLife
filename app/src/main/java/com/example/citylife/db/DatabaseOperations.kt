@@ -1,7 +1,6 @@
 package com.example.citylife.db
 
 import android.location.Location
-import com.example.citylife.model.report.Report
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.mongodb.MongoClient

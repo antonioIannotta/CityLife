@@ -1,6 +1,7 @@
 package com.example.citylife.utils
 
 import android.location.Location
+import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 
 class UserSerialization {
@@ -19,4 +20,8 @@ class UserSerialization {
     fun locationToString(user: User) =
         user.strLatitude(user.location) + " - " + user.strLongitude(user.location)
 
+    fun deserialize(userSerialized: String): User {
+        val userFields = userSerialized.split("\n")
+        return User(userFields[0], userFields[1].toFloat(),  /*Location deserializzato*/, /* Reportpreferencies deserializzato*/)
+    }
 }

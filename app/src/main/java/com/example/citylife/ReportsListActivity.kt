@@ -1,6 +1,6 @@
 package com.example.citylife
 
-import android.graphics.Paint.Style
+import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -10,24 +10,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.recyclerview.widget.RecyclerView
+import com.example.citylife.model.user.User
 import com.example.citylife.ui.theme.CityLifeTheme
-import com.google.android.gms.maps.model.LatLng
+import com.example.citylife.utils.UserSerialization
+
 
 class ReportsListActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,15 +36,25 @@ class ReportsListActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    ReportsListUI()
+                    var serializedUser = intent.getStringExtra("user")
+                    ReportsListUI(serializedUser!!)
                 }
             }
         }
     }
 }
 
+/*fun deserializeUser(serializedUser : String): User {
+
+
+    return user
+}*/
+
 @Composable
-fun ReportsListUI(names: List<String> = List(50){"$it"}) {
+fun ReportsListUI(serializedUser: String, names: List<String> = List(50){"$it"}) {
+
+    //UserSerialization().deserialize(serializedUser)
+
     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
         items(items = names) {
             name -> ReportItem("Title", "Description text", "5th avenue", painterResource(
@@ -125,6 +132,6 @@ fun ReportItem(reportTitle: String, reportText: String, reportLocation: String, 
 @Composable
 fun DefaultPreview6() {
     CityLifeTheme {
-        ReportsListUI()
+        ReportsListUI("")
     }
 }

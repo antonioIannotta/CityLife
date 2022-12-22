@@ -2,6 +2,7 @@ package com.example.citylife
 
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -23,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
@@ -51,7 +53,7 @@ class SignInActivity : ComponentActivity() {
     }
 }
 
-lateinit var signedInUser: User
+var signedInUser: User =  User("", 0.0f, Location(""), emptyList<ReportType>().toMutableList())
 
 @Composable
 fun SignInUI(context: Context) {
@@ -113,11 +115,10 @@ fun SignInUI(context: Context) {
                 if ( signedInUser.username != "" ) {
                     Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
 
-                    val mapActivityIntent = Intent(context, ReportsListActivity::class.java)
-                    mapActivityIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    mapActivityIntent.putExtra("user", UserSerialization().serialize(signedInUser)) // Valutare passaggio oggetto intero serializzato o formato GSON
-
-                    ContextCompat.startActivity(context, mapActivityIntent, null)
+                    val reportsListActivity = Intent(context, ReportsListActivity::class.java)
+                    reportsListActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    reportsListActivity.putExtra("user", UserSerialization().serialize(signedInUser)) // Valutare passaggio oggetto intero serializzato o formato GSON
+                    ContextCompat.startActivity(context, reportsListActivity, null)
                 } else {
                     Toast.makeText(context, "AUTENTICAZIONE FALLITA", Toast.LENGTH_LONG).show()
                 }
