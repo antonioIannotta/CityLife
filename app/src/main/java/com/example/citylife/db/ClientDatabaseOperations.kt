@@ -2,6 +2,7 @@ package com.example.citylife.db
 
 import com.example.citylife.model.report.Report
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import org.bson.Document
 import org.json.JSONObject
 
@@ -12,9 +13,8 @@ import org.json.JSONObject
 class ClientDatabaseOperations {
 
     //Indirizzo del database
-    private val dbAddress = "10.0.2.2"
-    //Porta per la connessione al database
-    private val port = 27017
+    private val dbAddress =
+        "mongodb+srv://admin:<password>@sctm.p6dkpwo.mongodb.net/?retryWrites=true&w=majority"
     //Nome del database
     private val dbName = "CityLife"
     //Nome della collezione
@@ -24,7 +24,7 @@ class ClientDatabaseOperations {
     /**
      *Funzione che ritorna la collezione
      */
-    private fun getClientCollection() = MongoClient(dbAddress, port)
+    private fun getClientCollection() = MongoClient(MongoClientURI(dbAddress))
         .getDatabase(dbName).getCollection(clientCollection)
 
     /**

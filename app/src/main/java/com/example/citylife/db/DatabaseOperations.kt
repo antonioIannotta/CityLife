@@ -4,6 +4,7 @@ import android.location.Location
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
@@ -14,9 +15,8 @@ import org.bson.conversions.Bson
 class DatabaseOperations {
 
     //indirizzo del DB
-    private val db_address = "10.0.2.2"
-    //Porta per la connessione al database
-    private val port = 27017
+    private val db_address =
+        "mongodb+srv://admin:admin@sctm.p6dkpwo.mongodb.net/?retryWrites=true&w=majority"
     //Nome del database
     private val databaseName = "CityLife"
     //Collezione degli utenti nel database
@@ -28,7 +28,7 @@ class DatabaseOperations {
      * Ritorna la collezione passata come argomento
      */
     fun getCollectionFromDatabase(collectionName: String): MongoCollection<Document> =
-        MongoClient(db_address, port).getDatabase(databaseName).getCollection(collectionName)
+        MongoClient(MongoClientURI(db_address)).getDatabase(databaseName).getCollection(collectionName)
 
     /**
      * Inserisce un utente nella collezione degli utenti
