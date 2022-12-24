@@ -10,8 +10,8 @@ class UserSerialization {
         var userSerialized = ""
 
         userSerialized += user.username + "\n"
-        userSerialized += locationToString(user) + "\n"
         userSerialized += user.distance.toString() + "\n"
+        userSerialized += locationToString(user) + "\n"
         userSerialized += user.reportPreferences.toString()
 
         return userSerialized

@@ -117,7 +117,7 @@ fun SignInUI(context: Context) {
 
                     val reportsListActivity = Intent(context, ReportsListActivity::class.java)
                     reportsListActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    reportsListActivity.putExtra("user", UserSerialization().serialize(signedInUser)) // Valutare passaggio oggetto intero serializzato o formato GSON
+                    reportsListActivity.putExtra("user", UserSerialization().serialize(signedInUser))
                     ContextCompat.startActivity(context, reportsListActivity, null)
                 } else {
                     Toast.makeText(context, "AUTENTICAZIONE FALLITA", Toast.LENGTH_LONG).show()
