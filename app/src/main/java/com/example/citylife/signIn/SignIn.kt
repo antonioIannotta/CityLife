@@ -21,8 +21,8 @@ class SignIn(val email: String, val password: String) {
      *Funzione che verifica che la password inserita sia effettivamente quella associata all'utente
      */
     private fun checkPasswordWithEmail(email: String, password: String): Boolean {
-        return DatabaseOperations().readAllUsers().count { 
-            document -> document.entries.toString().contains(email) && 
+        return DatabaseOperations().readAllUsers().count {
+                document -> document.entries.toString().contains(email) &&
                 document.entries.toString().contains(password)
         } == 1
     }

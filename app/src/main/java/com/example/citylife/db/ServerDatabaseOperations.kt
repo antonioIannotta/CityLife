@@ -2,15 +2,15 @@ package com.example.citylife.db
 
 import com.example.citylife.model.report.ServerReport
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import org.bson.Document
 import org.json.JSONObject
 
 class ServerDatabaseOperations {
 
     //Indirizzo del database
-    private val dbAddress = "10.0.2.2"
-    //Porta per la connessione al database
-    private val port = 27017
+    private val dbAddress =
+        "mongodb+srv://admin:Antonio-26@sctm.p6dkpwo.mongodb.net/?retryWrites=true/"
     //Nome del database
     private val dbName = "CityLife"
     //Nome della collezione
@@ -20,7 +20,7 @@ class ServerDatabaseOperations {
      * Ritorna la collezione relativa ai dati che vengono inseriti dal server nel database
      */
     fun getServerCollection() =
-        MongoClient(dbAddress, port)
+        MongoClient(MongoClientURI(dbAddress))
             .getDatabase(dbName).getCollection(serverCollection)
 
     /**

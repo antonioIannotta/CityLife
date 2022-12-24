@@ -3,4 +3,6 @@
     <string name="title_activity_signin">SigninActivity</string>
     <string name="title_activity_signup">SignupActivity</string>
     <string name="title_activity_map"></string>
+    <string name="title_activity_user_settings">UserSettingsActivity</string>
+    <string name="title_activity_app_main">AppMainActivity</string>
 </resources>

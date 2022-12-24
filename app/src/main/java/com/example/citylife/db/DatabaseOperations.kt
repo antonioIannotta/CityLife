@@ -5,6 +5,7 @@ import com.example.citylife.model.report.Report
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.UpdateOptions
@@ -15,9 +16,7 @@ import org.bson.conversions.Bson
 class DatabaseOperations {
 
     //indirizzo del DB
-    private val db_address = "10.0.2.2"
-    //Porta per la connessione al database
-    private val port = 27017
+    private val dbAddress = "mongodb+srv://admin:Antonio-26@sctm.p6dkpwo.mongodb.net/?retryWrites=true/"
     //Nome del database
     private val databaseName = "CityLife"
     //Collezione degli utenti nel database
@@ -29,7 +28,7 @@ class DatabaseOperations {
      * Ritorna la collezione passata come argomento
      */
     fun getCollectionFromDatabase(collectionName: String): MongoCollection<Document> =
-        MongoClient(db_address, port).getDatabase(databaseName).getCollection(collectionName)
+        MongoClient(MongoClientURI(dbAddress)).getDatabase(databaseName).getCollection(collectionName)
 
     /**
      * Inserisce un utente nella collezione degli utenti
@@ -52,7 +51,7 @@ class DatabaseOperations {
         var updates = emptyList<Bson>().toMutableList()
         updates.add(Updates.set("Username", username))
         locationAndDistance.forEach {
-            entry -> updates.add(Updates.set(entry.key, entry.value))
+                entry -> updates.add(Updates.set(entry.key, entry.value))
         }
         val options = UpdateOptions().upsert(true)
 
@@ -70,22 +69,30 @@ class DatabaseOperations {
         val username = userDocument["Username"].toString()
         val distance = userDocument["Distance"].toString().toFloat()
         val location = returnLocation(userDocument["Location"].toString())
-        val reportPreferences = returnReportPreferences(userDocument["ReportPreferences"].toString())
+        val reportPreferences = returnReportPreferences(userDocument["ReportPreference"].toString())
 
         return User(username, distance, location, reportPreferences)
     }
 
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
-        var reportPreferences = reportPreferencesString.drop(1)
-        reportPreferences = reportPreferencesString.dropLast(1)
-        val reportPreferencesList = emptyList<ReportType>().toMutableList()
-        reportPreferences.split(",").forEach {
-            element -> reportPreferencesList.add(ReportType.valueOf(element))
+        lateinit var reportPreferencesList: MutableList<ReportType>
+
+        if (reportPreferencesString == "[]") {
+            reportPreferencesList = emptyList<ReportType>().toMutableList()
+        }else {
+            var reportPreferences = reportPreferencesString.drop(1)
+            reportPreferences = reportPreferencesString.dropLast(1)
+            reportPreferencesList = emptyList<ReportType>().toMutableList()
+            reportPreferences.split(",").forEach {
+                    element -> reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
         }
         return reportPreferencesList
     }
 
     private fun returnLocation(userLocation: String): Location {
+        if (userLocation == "") {
+            return Location("")
+        }
         val latitude = userLocation.split(" - ")[0]
         val longitude = userLocation.split(" - ")[1]
         val location = Location("")

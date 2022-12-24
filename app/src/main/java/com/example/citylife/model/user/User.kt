@@ -28,7 +28,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     //Ultima segnalazione ricevuta
     var lastReceivedReport = ServerReport("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
-    lateinit var notificationList: MutableList<Report>
+    var notificationList = emptyList<Report>().toMutableList()
 
     /**
      *Funzione che consente di modificare la distanza di interesse.
@@ -73,7 +73,7 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     fun getSpecificReportPreference(specificReportType: String = "") =
         getReportPreferences().filter {
-            reportType -> reportType.name == specificReportType
+                reportType -> reportType.name == specificReportType
         }.first()
 
     /**
@@ -123,22 +123,22 @@ data class User(val username: String, var distance: Float = 0.0f,
     fun updateLocationOnDB() =
         DatabaseOperations()
             .insertOrUpdateLocationAndDistance(this.username, mapOf(
-            "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
-            "Distance" to getDistance().toString()
-        ))
+                "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
+                "Distance" to getDistance().toString()
+            ))
 
 
     /**
      * Funzione che converte la longitudine in stringa
      */
-    private fun strLongitude(location: Location): String =
+    fun strLongitude(location: Location): String =
         Location.convert(location.longitude, Location.FORMAT_DEGREES)
 
 
     /**
      * Funzione che converte la latitudine in stringa
      */
-    private fun strLatitude(location: Location): String =
+    fun strLatitude(location: Location): String =
         Location.convert(location.latitude, Location.FORMAT_DEGREES)
 
     /**
