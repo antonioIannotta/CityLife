@@ -46,8 +46,7 @@ data class SignUp(val name: String, val surname: String,
                 DatabaseOperations()
                     .insertUser(signUpMapOfValues)
                 user = User(username, 0.0f, Location(""), emptyList<ReportType>().toMutableList())
-            //}
-        }
+            }
         return user
     }
 
