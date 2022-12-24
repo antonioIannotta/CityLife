@@ -115,10 +115,10 @@ fun SignInUI(context: Context) {
                 if ( signedInUser.username != "" ) {
                     Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
 
-                    val reportsListActivity = Intent(context, ReportsListActivity::class.java)
-                    reportsListActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                    reportsListActivity.putExtra("user", UserSerialization().serialize(signedInUser))
-                    ContextCompat.startActivity(context, reportsListActivity, null)
+                    val appMainActivity = Intent(context, AppMainActivity::class.java)
+                    appMainActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                    appMainActivity.putExtra("user", UserSerialization().serialize(signedInUser))
+                    ContextCompat.startActivity(context, appMainActivity, null)
                 } else {
                     Toast.makeText(context, "AUTENTICAZIONE FALLITA", Toast.LENGTH_LONG).show()
                 }

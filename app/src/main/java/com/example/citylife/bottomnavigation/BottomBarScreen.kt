@@ -26,9 +26,9 @@ sealed class BottomBarScreen(
     )
 
     // for report
-    object Profile: BottomBarScreen(
-        route = "profile",
-        title = "Profile",
+    object UserSettings: BottomBarScreen(
+        route = "usersettings",
+        title = "UserSettings",
         icon = R.drawable.ic_baseline_settings_24,
         icon_focused = R.drawable.ic_baseline_settings_24
     )
