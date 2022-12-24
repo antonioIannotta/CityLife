@@ -16,7 +16,7 @@ class DatabaseOperations {
 
     //indirizzo del DB
     private val db_address =
-        "mongodb+srv://admin:admin@sctm.p6dkpwo.mongodb.net/?retryWrites=true&w=majority"
+        "mongodb+srv://admin:Antonio-26@sctm.p6dkpwo.mongodb.net/?retryWrites=true/"
     //Nome del database
     private val databaseName = "CityLife"
     //Collezione degli utenti nel database

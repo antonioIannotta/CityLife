@@ -10,7 +10,7 @@ class ServerDatabaseOperations {
 
     //Indirizzo del database
     private val dbAddress =
-        "mongodb+srv://admin:<password>@sctm.p6dkpwo.mongodb.net/?retryWrites=true&w=majority"
+        "mongodb+srv://admin:Antonio-26@sctm.p6dkpwo.mongodb.net/?retryWrites=true/"
     //Nome del database
     private val dbName = "CityLife"
     //Nome della collezione
