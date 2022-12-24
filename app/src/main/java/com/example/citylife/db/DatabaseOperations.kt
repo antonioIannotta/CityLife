@@ -15,8 +15,7 @@ import org.bson.conversions.Bson
 class DatabaseOperations {
 
     //indirizzo del DB
-    private val db_address =
-        "mongodb+srv://admin:Antonio-26@sctm.p6dkpwo.mongodb.net/?retryWrites=true/"
+    private val dbAddress = "mongodb+srv://admin:Antonio-26@sctm.p6dkpwo.mongodb.net/?retryWrites=true/"
     //Nome del database
     private val databaseName = "CityLife"
     //Collezione degli utenti nel database
@@ -28,7 +27,7 @@ class DatabaseOperations {
      * Ritorna la collezione passata come argomento
      */
     fun getCollectionFromDatabase(collectionName: String): MongoCollection<Document> =
-        MongoClient(MongoClientURI(db_address)).getDatabase(databaseName).getCollection(collectionName)
+        MongoClient(MongoClientURI(dbAddress)).getDatabase(databaseName).getCollection(collectionName)
 
     /**
      * Inserisce un utente nella collezione degli utenti
