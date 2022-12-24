@@ -79,14 +79,15 @@ class DatabaseOperations {
 
         if (reportPreferencesString == "[]") {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
-        }else {
+        } else {
             var reportPreferences = reportPreferencesString.drop(1)
             reportPreferences = reportPreferencesString.dropLast(1)
             reportPreferencesList = emptyList<ReportType>().toMutableList()
-            reportPreferences.split(",").forEach {
-                    element -> reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
+            reportPreferences.split(",").forEach { element ->
+                reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
+            }
         }
-        return reportPreferencesList
+            return reportPreferencesList
     }
 
     private fun returnLocation(userLocation: String): Location {
