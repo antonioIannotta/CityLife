@@ -17,6 +17,15 @@
         android:theme="@style/Theme.CityLife"
         tools:targetApi="31">
         <activity
+            android:name=".SelectReportTypeActivity"
+            android:exported="false"
+            android:label="@string/title_activity_select_report_type"
+            android:theme="@style/Theme.CityLife">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
             android:name=".AppMainActivity"
             android:exported="false"
             android:label="@string/title_activity_app_main"
