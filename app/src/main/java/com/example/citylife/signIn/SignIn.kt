@@ -1,6 +1,6 @@
 package com.example.citylife.signIn
 
-import com.example.citylife.db.DatabaseOperations
+import com.example.citylife.http.DatabaseOperations
 import com.example.citylife.model.user.User
 
 class SignIn(val email: String, val password: String) {
