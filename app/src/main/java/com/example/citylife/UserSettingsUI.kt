@@ -1,5 +1,7 @@
 package com.example.citylife
 
+import android.content.Context
+import android.content.Intent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Slider
@@ -14,9 +16,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
+import com.example.citylife.utils.UserSerialization
 
 @Composable
-fun UserSettingsUI() {
+fun UserSettingsUI(context: Context, serializedUser: String) {
 
     var userIcon = painterResource(id = R.drawable.ic_round_supervised_user_circle_24)
     val rightArrowPainter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24)
@@ -84,7 +88,12 @@ fun UserSettingsUI() {
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 TextButton(
-                    onClick = { /*TODO*/ },
+                    onClick = {
+                        val selectReportTypeActivity = Intent(context, SelectReportTypeActivity::class.java)
+                        selectReportTypeActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        selectReportTypeActivity.putExtra("user", UserSerialization().serialize(signedInUser))
+                        ContextCompat.startActivity(context, selectReportTypeActivity, null)
+                    },
                 ) {
                     Text(
                         text="Tipologia notifiche di interesse",

@@ -1,5 +1,6 @@
 package com.example.citylife
 
+import android.content.Context
 import android.location.Location
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -43,7 +45,7 @@ class AppMainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     var serializedUser = intent.getStringExtra("user")
-                    BottomNav(serializedUser!!)
+                    BottomNav(applicationContext, serializedUser!!)
                 }
             }
         }
@@ -51,7 +53,7 @@ class AppMainActivity : ComponentActivity() {
 }
 
 @Composable
-fun BottomNav(serializedUser: String) {
+fun BottomNav(context: Context, serializedUser: String) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -60,7 +62,8 @@ fun BottomNav(serializedUser: String) {
         Modifier.padding(it)
         BottomNavGraph(
             navController,
-            serializedUser
+            serializedUser,
+            context
         )
     }
 }
@@ -68,7 +71,8 @@ fun BottomNav(serializedUser: String) {
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
-    serializedUser: String
+    serializedUser: String,
+    context: Context
 ) {
 
     NavHost(
@@ -79,10 +83,16 @@ fun BottomNavGraph(
             ReportsListUI(serializedUser = serializedUser)
         }
         composable(route =  BottomBarScreen.Report.route) {
-            UserSettingsUI()
+            /*UserSettingsUI(
+                serializedUser = serializedUser,
+                context = context
+            )*/
         }
         composable(route =  BottomBarScreen.UserSettings.route) {
-            UserSettingsUI()
+            UserSettingsUI(
+                serializedUser = serializedUser,
+                context = context
+            )
         }
     }
 }
@@ -101,7 +111,6 @@ fun BottomBar(navController: NavHostController) {
 
     Row(
         modifier = Modifier
-            .padding(start = 10.dp, end = 10.dp, top = 8.dp, bottom = 8.dp)
             .background(Color.White)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceEvenly,
@@ -168,6 +177,6 @@ fun RowScope.AddItem(
 fun AppMainPreview() {
     CityLifeTheme {
         var user = User("username", 0.0f, Location(""), emptyList<ReportType>().toMutableList())
-        BottomNav(UserSerialization().serialize(user))
+        BottomNav(LocalContext.current, UserSerialization().serialize(user))
     }
 }
