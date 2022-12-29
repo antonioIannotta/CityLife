@@ -134,15 +134,12 @@ fun RowScope.AddItem(
 ) {
     val selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true
 
-    /*val background =
-        if (selected) MaterialTheme.colorScheme.primary.copy(alpha = 0.6f) else Color.Transparent*/
-
     val contentColor =
-        if (selected) Color.White else Color.Black
+        if (selected) Color.Red else Color.Black
 
     Box(
         modifier = Modifier
-            .height(40.dp)
+            .height(65.dp)
             .clip(CircleShape)
             .clickable(onClick = {
                 navController.navigate(screen.route) {
@@ -159,6 +156,7 @@ fun RowScope.AddItem(
         ) {
             Icon(
                 painter = painterResource(id = if (selected) screen.icon_focused else screen.icon),
+                modifier = Modifier.height(40.dp).width(40.dp),
                 contentDescription = "icon",
                 tint = contentColor
             )
