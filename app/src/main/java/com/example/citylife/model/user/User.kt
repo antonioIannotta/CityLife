@@ -3,9 +3,9 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.db.ClientDatabaseOperations
-import com.example.citylife.db.DatabaseOperations
-import com.example.citylife.db.ServerDatabaseOperations
+import com.example.citylife.http.ClientDatabaseOperations
+import com.example.citylife.http.DatabaseOperations
+import com.example.citylife.http.ServerDatabaseOperations
 import com.example.citylife.model.report.Report
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.report.ServerReport

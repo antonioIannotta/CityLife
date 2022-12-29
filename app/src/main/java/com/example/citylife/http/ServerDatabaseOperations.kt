@@ -1,4 +1,4 @@
-package com.example.citylife.db
+package com.example.citylife.http
 
 import com.example.citylife.model.report.ServerReport
 import com.mongodb.MongoClient

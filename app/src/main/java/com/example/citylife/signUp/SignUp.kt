@@ -3,11 +3,16 @@ package com.example.citylife.signUp
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.db.DatabaseOperations
+import com.example.citylife.http.DatabaseOperations
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
+import com.example.citylife.http.models.UserDB
+import com.example.citylife.http.models.LocationDB
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import java.security.MessageDigest
-import java.time.LocalDate
 
 data class SignUp(val name: String, val surname: String,
                   val email: String, val password: String) {
@@ -18,42 +23,55 @@ data class SignUp(val name: String, val surname: String,
     private val username =  MessageDigest.getInstance("MD5")
         .digest((name + surname + email).toByteArray()).toString()
 
-    /**
-     *Funzione che mappa dei valori che vengono memorizzati all'interno della collezione User
-     */
-    private val signUpMapOfValues = mapOf<String, String>(
-        "Name" to name,
-        "Username" to username,
-        "Distance" to 0f.toString(),
-        "Location" to "",
-        "Surname" to surname,
-        "Email" to email,
-        "Password" to password,
-        "ReportPreference" to "[]"
+    val client = HttpClient(CIO)
+    val userDB = UserDB(
+        name,
+        surname,
+        username,
+        email,
+        password,
+        0.0f.toString(),
+        "",
+        "[]"
+    )
+    val locationDB = LocationDB(
+        username,
+        0.0f.toString(),
+        ""
     )
 
     /**
      *Funzioen che si occupa della registrazione e memorizzazione dei dati nel DB
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun signUp(): User? {
+    suspend fun signUp(): User? {
 
-        var user: User? = null
+        lateinit var user: User
 
         if (isEmailUnique(email)) {
-            //FirebaseEmailOperations().sendEmail(email)
-            //if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
-                DatabaseOperations()
-                    .insertUser(signUpMapOfValues)
-                user = User(username, 0.0f, Location(""), emptyList<ReportType>().toMutableList())
-            }
+            val httpRequestBuilder = HttpRequestBuilder()
+            httpRequestBuilder.method = HttpMethod.Post
+            httpRequestBuilder.url("127.0.0.1/users/insertUser")
+            httpRequestBuilder.setBody(userDB)
+
+            client.post(httpRequestBuilder)
+
+            httpRequestBuilder.url("127.0.0.1/location/insertLocation")
+            httpRequestBuilder.setBody(locationDB)
+
+            client.post(httpRequestBuilder)
+
+            user = User(username, 0.0f, Location(""), emptyList<ReportType>().toMutableList())
+        }
         return user
     }
 
+
+    //TODO: EFFETTUARE TUTTI I CONTROLLI
     /**
      *Funzione che verifica che la mail inserita non sia già stata utilizzata
      */
-    fun isEmailUnique(email: String): Boolean {
+    private fun isEmailUnique(email: String): Boolean {
         return check(email)
     }
 
@@ -61,7 +79,7 @@ data class SignUp(val name: String, val surname: String,
      *Funzione che effettua la verificad ella presenza all'interno
      * della collezione di un valore passato come parametro
      */
-    fun check(value: String): Boolean {
+    private fun check(value: String): Boolean {
         return DatabaseOperations().readAllUsers().count {
                 document -> document.entries.toString().contains(value)
         } == 0
