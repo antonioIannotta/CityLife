@@ -46,11 +46,13 @@ data class SignUp(val name: String, val surname: String,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun signUp(): User {
 
-        lateinit var user: User
-
         val httpRequestBuilder = HttpRequestBuilder()
         httpRequestBuilder.method = HttpMethod.Post
-        httpRequestBuilder.url("10.0.2.2:5000/users/insertUser")
+        val url = URLBuilder()
+        url.host = "10.0.2.2"
+        url.port = 5000
+        url.path("/users/insertUser")
+        httpRequestBuilder.url(url.build())
         httpRequestBuilder.setBody(userDB)
 
         client.post(httpRequestBuilder)
