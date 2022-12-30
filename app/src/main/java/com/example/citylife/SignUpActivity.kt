@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import com.example.citylife.model.user.User
 import com.example.citylife.signUp.SignUp
 import com.example.citylife.ui.theme.CityLifeTheme
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -60,14 +61,14 @@ fun SignUpUI(context: Context) {
     var password by remember { mutableStateOf("") }
     val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
 
-    fun signUpButtonClick(name: String, surname: String, email: String, password: String): Future<User> {
-        return workerPool.submit(Callable {
+    fun signUpButtonClick(name: String, surname: String, email: String, password: String): User {
+        lateinit var user: User
+        runBlocking {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                SignUp(name, surname, email, password).signUp()
-            } else {
-                TODO("VERSION.SDK_INT < O")
+                user = SignUp(name, surname, email, password).signUp()
             }
-        })
+        }
+        return user
     }
 
     Column(
@@ -131,7 +132,7 @@ fun SignUpUI(context: Context) {
 
         OutlinedButton(
             onClick = {
-                signedUpUser = signUpButtonClick(name, surname, email, password).get()
+                signedUpUser = signUpButtonClick(name, surname, email, password)
                 Toast.makeText(context, "Username ---> " + signedUpUser.username, Toast.LENGTH_LONG).show()
             },
             modifier = Modifier

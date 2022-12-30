@@ -3,14 +3,9 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.http.ClientDatabaseOperations
-import com.example.citylife.http.DatabaseOperations
-import com.example.citylife.http.ServerDatabaseOperations
 import com.example.citylife.model.report.Report
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.report.ServerReport
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -18,8 +13,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import java.time.LocalDateTime
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
 
 /**
  * classe che rappresenta uno specifico utente.
@@ -40,12 +33,15 @@ data class User(val username: String, var distance: Float = 0.0f,
     /**
      *Funzione che consente di modificare la distanza di interesse.
      */
-    fun changeDistance(newDistance: Float) {
+    suspend fun changeDistance(newDistance: Float) {
         distance = newDistance
-        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
-            Filters.eq("Username", this.username),
-            Updates.set("Distance", this.distance.toString())
-        )
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.url("127.0.0.1:5000/users/updateDistance")
+        httpRequestBuilder.parameter("username", this.username)
+        httpRequestBuilder.parameter("distance", this.distance.toString())
+        httpRequestBuilder.method = HttpMethod.Get
+
+        httpClient.get(httpRequestBuilder)
     }
 
     /**
