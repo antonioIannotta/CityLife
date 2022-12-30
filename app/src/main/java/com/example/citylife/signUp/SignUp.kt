@@ -9,6 +9,7 @@ import com.example.citylife.model.user.User
 import com.example.citylife.http.models.UserDB
 import com.example.citylife.http.models.LocationDB
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -44,44 +45,23 @@ data class SignUp(val name: String, val surname: String,
      *Funzioen che si occupa della registrazione e memorizzazione dei dati nel DB
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun signUp(): User? {
+    suspend fun signUp(): User {
 
         lateinit var user: User
 
-        if (isEmailUnique(email)) {
-            val httpRequestBuilder = HttpRequestBuilder()
-            httpRequestBuilder.method = HttpMethod.Post
-            httpRequestBuilder.url("127.0.0.1/users/insertUser")
-            httpRequestBuilder.setBody(userDB)
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.method = HttpMethod.Post
+        httpRequestBuilder.url("127.0.0.1/users/insertUser")
+        httpRequestBuilder.setBody(userDB)
 
-            client.post(httpRequestBuilder)
+        client.post(httpRequestBuilder)
 
-            httpRequestBuilder.url("127.0.0.1/location/insertLocation")
-            httpRequestBuilder.setBody(locationDB)
+        httpRequestBuilder.url("127.0.0.1/location/insertLocation")
+        httpRequestBuilder.setBody(locationDB)
 
-            client.post(httpRequestBuilder)
+        client.post(httpRequestBuilder)
 
-            user = User(username, 0.0f, Location(""), emptyList<ReportType>().toMutableList())
-        }
-        return user
-    }
-
-
-    //TODO: EFFETTUARE TUTTI I CONTROLLI
-    /**
-     *Funzione che verifica che la mail inserita non sia già stata utilizzata
-     */
-    private fun isEmailUnique(email: String): Boolean {
-        return check(email)
-    }
-
-    /**
-     *Funzione che effettua la verificad ella presenza all'interno
-     * della collezione di un valore passato come parametro
-     */
-    private fun check(value: String): Boolean {
-        return DatabaseOperations().readAllUsers().count {
-                document -> document.entries.toString().contains(value)
-        } == 0
+        return User(username, 0.0f, Location(""),
+            emptyList<ReportType>().toMutableList())
     }
 }

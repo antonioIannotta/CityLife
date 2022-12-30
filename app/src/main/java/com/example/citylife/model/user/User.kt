@@ -11,6 +11,12 @@ import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.report.ServerReport
 import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Updates
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import java.time.LocalDateTime
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -29,6 +35,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     var lastReceivedReport = ServerReport("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
     var notificationList = emptyList<Report>().toMutableList()
+    val httpClient = HttpClient(CIO)
 
     /**
      *Funzione che consente di modificare la distanza di interesse.
@@ -51,13 +58,16 @@ data class User(val username: String, var distance: Float = 0.0f,
     /**
      *Funzione che aggiunge una tipologia di segnalazione a quelle di interesse
      */
-    fun addReportToPreferences(report: ReportType) {
+    suspend fun addReportToPreferences(report: ReportType) {
 
         reportPreferences.add(report)
-        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
-            Filters.eq("Username", this.username),
-            Updates.set("ReportPreferences", this.reportPreferences.toString())
-        )
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.url("127.0.0.1:5000/users/updateReportPreference")
+        httpRequestBuilder.parameter("username", this.username)
+        httpRequestBuilder.parameter("reportPreference", this.reportPreferences.toString())
+        httpRequestBuilder.method = HttpMethod.Get
+
+        httpClient.get(httpRequestBuilder)
     }
 
     /**
@@ -87,13 +97,16 @@ data class User(val username: String, var distance: Float = 0.0f,
      *Funzione che imposta la nuova posizione per l'utente
      */
     @JvmName("setLocation1")
-    fun setLocation(location: Location)  {
+    suspend fun setLocation(location: Location)  {
         this.location = location
         val locationString = strLatitude(location) + " - " + strLongitude(location)
-        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
-            Filters.eq("Username", this.username),
-            Updates.set("Location", locationString)
-        )
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.url("127.0.0.1:5000/users/updateLocation")
+        httpRequestBuilder.parameter("username", this.username)
+        httpRequestBuilder.parameter("location", locationString)
+        httpRequestBuilder.method = HttpMethod.Get
+
+        httpClient.get(httpRequestBuilder)
     }
 
     /**
@@ -120,12 +133,20 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che aggiorna la posizione dell'utente e la distanza
      * per la quale è interessato a ricevere le segnalazioni
      */
-    fun updateLocationOnDB() =
-        DatabaseOperations()
-            .insertOrUpdateLocationAndDistance(this.username, mapOf(
-                "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
-                "Distance" to getDistance().toString()
-            ))
+    suspend fun updateLocationAndDistanceOnDB() {
+
+        val locationString = strLatitude(location) + " - " + strLongitude(location)
+
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.url("127.0.0.1:5000/location/updateLocationAndDistance")
+        httpRequestBuilder.parameter("username", this.username)
+        httpRequestBuilder.parameter("location", locationString)
+        httpRequestBuilder.parameter("distance", this.distance.toString())
+        httpRequestBuilder.method = HttpMethod.Get
+
+        httpClient.get(httpRequestBuilder)
+
+    }
 
 
     /**
@@ -156,32 +177,37 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che invia una segnalazione al server.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sendReport() =
-        ClientDatabaseOperations()
-            .insertReport(newReport())
+    suspend fun sendReport() {
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.url("127.0.0.1:5000/users/insertReport")
+        httpRequestBuilder.setBody(newReport())
+        httpRequestBuilder.method = HttpMethod.Post
+
+        httpClient.post(httpRequestBuilder)
+    }
 
     /**
      * Funzione che si occupa di recuperare le notifiche di interesse per l'utente
      */
-    fun receiveReport() {
-        val workerPool = Executors.newSingleThreadExecutor()
-        workerPool.submit(Callable {
-            while (true) {
-                var lastReportInDB = ServerDatabaseOperations().composeReportFromDocument(
-                    ServerDatabaseOperations().getServerCollection().find().first()
-                )
+    suspend fun receiveReport() {
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.method = HttpMethod.Get
+        httpRequestBuilder.url("127.0.0.1:5000/lastReport")
 
-                if (lastReceivedReport.equals(lastReportInDB)) {
-                    continue
-                } else {
-                    if (lastReportInDB.listOfUsername.contains(this.username)) {
-                        lastReceivedReport = lastReportInDB
-                        if (reportPreferences.contains(ReportType.valueOf(lastReportInDB.type))) {
-                            notificationList.add(lastReceivedReport.toReport(this.username))
-                        }
+        while (true) {
+            var lastReportInDB = httpClient.get(httpRequestBuilder).body<ServerReport>()
+
+            if (lastReceivedReport.equals(lastReportInDB)) {
+                continue
+            } else {
+                if (lastReportInDB.listOfUsername.contains(this.username)) {
+                    lastReceivedReport = lastReportInDB
+                    if (reportPreferences.contains(ReportType.valueOf(lastReportInDB.type))) {
+                        notificationList.add(lastReceivedReport.toReport(this.username))
                     }
                 }
             }
-        })
+        }
     }
 }
+
