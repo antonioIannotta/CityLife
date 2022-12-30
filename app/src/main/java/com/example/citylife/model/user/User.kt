@@ -36,7 +36,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     suspend fun changeDistance(newDistance: Float) {
         distance = newDistance
         val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("127.0.0.1:5000/users/updateDistance")
+        httpRequestBuilder.url("10.0.2.2:5000/users/updateDistance")
         httpRequestBuilder.parameter("username", this.username)
         httpRequestBuilder.parameter("distance", this.distance.toString())
         httpRequestBuilder.method = HttpMethod.Get
@@ -58,7 +58,7 @@ data class User(val username: String, var distance: Float = 0.0f,
 
         reportPreferences.add(report)
         val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("127.0.0.1:5000/users/updateReportPreference")
+        httpRequestBuilder.url("10.0.2.2:5000/users/updateReportPreference")
         httpRequestBuilder.parameter("username", this.username)
         httpRequestBuilder.parameter("reportPreference", this.reportPreferences.toString())
         httpRequestBuilder.method = HttpMethod.Get
@@ -97,7 +97,7 @@ data class User(val username: String, var distance: Float = 0.0f,
         this.location = location
         val locationString = strLatitude(location) + " - " + strLongitude(location)
         val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("127.0.0.1:5000/users/updateLocation")
+        httpRequestBuilder.url("10.0.2.2:5000/users/updateLocation")
         httpRequestBuilder.parameter("username", this.username)
         httpRequestBuilder.parameter("location", locationString)
         httpRequestBuilder.method = HttpMethod.Get
@@ -134,7 +134,7 @@ data class User(val username: String, var distance: Float = 0.0f,
         val locationString = strLatitude(location) + " - " + strLongitude(location)
 
         val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("127.0.0.1:5000/location/updateLocationAndDistance")
+        httpRequestBuilder.url("10.0.2.2:5000/location/updateLocationAndDistance")
         httpRequestBuilder.parameter("username", this.username)
         httpRequestBuilder.parameter("location", locationString)
         httpRequestBuilder.parameter("distance", this.distance.toString())
@@ -175,7 +175,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun sendReport() {
         val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("127.0.0.1:5000/users/insertReport")
+        httpRequestBuilder.url("10.0.2.2:5000/users/insertReport")
         httpRequestBuilder.setBody(newReport())
         httpRequestBuilder.method = HttpMethod.Post
 
@@ -188,7 +188,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     suspend fun receiveReport() {
         val httpRequestBuilder = HttpRequestBuilder()
         httpRequestBuilder.method = HttpMethod.Get
-        httpRequestBuilder.url("127.0.0.1:5000/lastReport")
+        httpRequestBuilder.url("10.0.2.2:5000/users/lastReport")
 
         while (true) {
             var lastReportInDB = httpClient.get(httpRequestBuilder).body<ServerReport>()
