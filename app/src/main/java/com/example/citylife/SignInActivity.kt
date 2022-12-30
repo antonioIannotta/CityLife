@@ -30,6 +30,7 @@ import com.example.citylife.signIn.SignIn
 import com.example.citylife.ui.theme.CityLifeTheme
 import com.example.citylife.utils.UserSerialization
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Callable
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -64,10 +65,14 @@ fun SignInUI(context: Context) {
     var password by remember { mutableStateOf("") }
     val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
 
-    fun signInButtonClick(email: String, password: String): Future<User> {
-        return workerPool.submit(Callable {
-            SignIn(email, password).signIn()
-        })
+    fun signInButtonClick(email: String, password: String): User {
+        lateinit var user: User
+
+        runBlocking {
+            user = SignIn(email, password).signIn()
+        }
+
+        return user
     }
 
     Column(
@@ -111,7 +116,7 @@ fun SignInUI(context: Context) {
 
         OutlinedButton(
             onClick = {
-                signedInUser = signInButtonClick(email, password).get()
+                signedInUser = signInButtonClick(email, password)
                 if ( signedInUser.username != "" ) {
                     Toast.makeText(context, "Username ---> " + signedInUser.username, Toast.LENGTH_LONG).show()
 

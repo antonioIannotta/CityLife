@@ -3,7 +3,6 @@ package com.example.citylife.signUp
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.http.DatabaseOperations
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.example.citylife.http.models.UserDB
@@ -51,12 +50,12 @@ data class SignUp(val name: String, val surname: String,
 
         val httpRequestBuilder = HttpRequestBuilder()
         httpRequestBuilder.method = HttpMethod.Post
-        httpRequestBuilder.url("127.0.0.1/users/insertUser")
+        httpRequestBuilder.url("127.0.0.1:5000/users/insertUser")
         httpRequestBuilder.setBody(userDB)
 
         client.post(httpRequestBuilder)
 
-        httpRequestBuilder.url("127.0.0.1/location/insertLocation")
+        httpRequestBuilder.url("127.0.0.1:5000/location/insertLocation")
         httpRequestBuilder.setBody(locationDB)
 
         client.post(httpRequestBuilder)
