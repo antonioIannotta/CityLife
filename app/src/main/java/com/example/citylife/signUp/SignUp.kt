@@ -50,7 +50,7 @@ data class SignUp(val name: String, val surname: String,
 
         val httpRequestBuilder = HttpRequestBuilder()
         httpRequestBuilder.method = HttpMethod.Post
-        httpRequestBuilder.url("127.0.0.1:5000/users/insertUser")
+        httpRequestBuilder.url("10.0.2.2:5000/users/insertUser")
         httpRequestBuilder.setBody(userDB)
 
         client.post(httpRequestBuilder)

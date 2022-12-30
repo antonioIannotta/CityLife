@@ -21,7 +21,7 @@ class SignIn(val email: String, val password: String) {
 
         val httpRequestBuilder = HttpRequestBuilder()
         httpRequestBuilder.method = HttpMethod.Get
-        httpRequestBuilder.url("127.0.0.1:5000/users")
+        httpRequestBuilder.url("10.0.2.2:5000/users")
         httpRequestBuilder.parameter("email", email)
         httpRequestBuilder.parameter("password", password)
 
