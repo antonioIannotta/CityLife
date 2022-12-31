@@ -5,6 +5,7 @@ package com.example.citylife.model.report
  * Contiene il tipo, la posizione, la data, il testo della segnalazione e la lista
  * degli utenti che sono interessati a quella segnalazione
  */
+@kotlinx.serialization.Serializable
 data class ServerReport(val type: String, val location: String,
                   val localDateTime: String, val text: String, val listOfUsername: String) {
 

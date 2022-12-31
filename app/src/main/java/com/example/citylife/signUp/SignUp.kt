@@ -46,21 +46,26 @@ data class SignUp(val name: String, val surname: String,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun signUp(): User {
 
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.method = HttpMethod.Post
-        val url = URLBuilder()
-        url.host = "10.0.2.2"
-        url.port = 5000
-        url.path("/users/insertUser")
-        httpRequestBuilder.url(url.build())
-        httpRequestBuilder.setBody(userDB)
+        client.post {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/insertUser")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(userDB)
+        }
 
-        client.post(httpRequestBuilder)
-
-        httpRequestBuilder.url("127.0.0.1:5000/location/insertLocation")
-        httpRequestBuilder.setBody(locationDB)
-
-        client.post(httpRequestBuilder)
+        client.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/location/insertLocationAndDistance")
+                parameters.append("username", locationDB.username)
+                parameters.append("location", locationDB.location)
+                parameters.append("distance", locationDB.distance)
+            }
+        }
 
         return User(username, 0.0f, Location(""),
             emptyList<ReportType>().toMutableList())

@@ -35,13 +35,15 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     suspend fun changeDistance(newDistance: Float) {
         distance = newDistance
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("10.0.2.2:5000/users/updateDistance")
-        httpRequestBuilder.parameter("username", this.username)
-        httpRequestBuilder.parameter("distance", this.distance.toString())
-        httpRequestBuilder.method = HttpMethod.Get
-
-        httpClient.get(httpRequestBuilder)
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/updateDistance")
+                parameters.append("username", username)
+                parameters.append("distance", distance.toString())
+            }
+        }
     }
 
     /**
@@ -57,13 +59,16 @@ data class User(val username: String, var distance: Float = 0.0f,
     suspend fun addReportToPreferences(report: ReportType) {
 
         reportPreferences.add(report)
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("10.0.2.2:5000/users/updateReportPreference")
-        httpRequestBuilder.parameter("username", this.username)
-        httpRequestBuilder.parameter("reportPreference", this.reportPreferences.toString())
-        httpRequestBuilder.method = HttpMethod.Get
 
-        httpClient.get(httpRequestBuilder)
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/updateReportPreference")
+                parameters.append("username", username)
+                parameters.append("reportPreference", reportPreferences.toString())
+            }
+        }
     }
 
     /**
@@ -96,13 +101,16 @@ data class User(val username: String, var distance: Float = 0.0f,
     suspend fun setLocation(location: Location)  {
         this.location = location
         val locationString = strLatitude(location) + " - " + strLongitude(location)
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("10.0.2.2:5000/users/updateLocation")
-        httpRequestBuilder.parameter("username", this.username)
-        httpRequestBuilder.parameter("location", locationString)
-        httpRequestBuilder.method = HttpMethod.Get
 
-        httpClient.get(httpRequestBuilder)
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/updateLocation")
+                parameters.append("username", username)
+                parameters.append("location", locationString)
+            }
+        }
     }
 
     /**
@@ -133,15 +141,16 @@ data class User(val username: String, var distance: Float = 0.0f,
 
         val locationString = strLatitude(location) + " - " + strLongitude(location)
 
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("10.0.2.2:5000/location/updateLocationAndDistance")
-        httpRequestBuilder.parameter("username", this.username)
-        httpRequestBuilder.parameter("location", locationString)
-        httpRequestBuilder.parameter("distance", this.distance.toString())
-        httpRequestBuilder.method = HttpMethod.Get
-
-        httpClient.get(httpRequestBuilder)
-
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2"
+                path("/location/updateLocationAndDistance")
+                parameters.append("username", username)
+                parameters.append("location", locationString)
+                parameters.append("distance", distance.toString())
+            }
+        }
     }
 
 
@@ -174,12 +183,16 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun sendReport() {
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.url("10.0.2.2:5000/users/insertReport")
-        httpRequestBuilder.setBody(newReport())
-        httpRequestBuilder.method = HttpMethod.Post
 
-        httpClient.post(httpRequestBuilder)
+        httpClient.post {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/insertReport")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(newReport())
+        }
     }
 
     /**
@@ -191,7 +204,13 @@ data class User(val username: String, var distance: Float = 0.0f,
         httpRequestBuilder.url("10.0.2.2:5000/users/lastReport")
 
         while (true) {
-            var lastReportInDB = httpClient.get(httpRequestBuilder).body<ServerReport>()
+            var lastReportInDB = httpClient.get {
+                url {
+                    protocol = URLProtocol.HTTPS
+                    host = "10.0.2.2:5000"
+                    path("/users/lastReport")
+                }
+            }.body<ServerReport>()
 
             if (lastReceivedReport.equals(lastReportInDB)) {
                 continue
