@@ -73,7 +73,8 @@ data class SignUp(val name: String, val surname: String,
         client.get {
             url {
                 protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                host = "10.0.2.2"
+                port = 5000
                 path("/location/insertLocationAndDistance")
                 parameters.append("username", locationDB.username)
                 parameters.append("location", locationDB.location)
