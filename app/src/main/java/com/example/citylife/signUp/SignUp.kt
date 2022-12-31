@@ -59,27 +59,20 @@ data class SignUp(val name: String, val surname: String,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun signUp(): User {
 
-        client.get {
+        client.post {
             url {
-                protocol = URLProtocol.HTTP
+                protocol = URLProtocol.HTTPS
                 host = "10.0.2.2"
                 port = 5000
                 path("/users/insertUser")
-                parameters.append("name", userDB.name)
-                parameters.append("surname", userDB.surname)
-                parameters.append("username", userDB.username)
-                parameters.append("email", userDB.email)
-                parameters.append("password", userDB.password)
-                parameters.append("distance", userDB.distance)
-                parameters.append("location", userDB.location)
-                parameters.append("reportPreference", userDB.reportPreference)
-
             }
+            contentType(ContentType.Application.Json)
+            setBody(userDB)
         }
 
         client.get {
             url {
-                protocol = URLProtocol.HTTP
+                protocol = URLProtocol.HTTPS
                 host = "10.0.2.2:5000"
                 path("/location/insertLocationAndDistance")
                 parameters.append("username", locationDB.username)
