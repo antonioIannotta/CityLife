@@ -10,7 +10,7 @@ import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 
-class SignIn(val email: String, val password: String) {
+class SignIn(val userEmail: String, val userPassword: String) {
 
     val httpClient = HttpClient(CIO)
 
@@ -19,13 +19,15 @@ class SignIn(val email: String, val password: String) {
      */
     suspend fun signIn(): User {
 
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.method = HttpMethod.Get
-        httpRequestBuilder.url("10.0.2.2:5000/users")
-        httpRequestBuilder.parameter("email", email)
-        httpRequestBuilder.parameter("password", password)
-
-        val userDB = httpClient.get(httpRequestBuilder).body<UserDB>()
+        val userDB = httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users")
+                parameters.append("email", userEmail)
+                parameters.append("password", userPassword)
+            }
+        }.body<UserDB>()
 
         return User(userDB.username, userDB.distance.toFloat(),
             returnLocation(userDB.location), returnReportPreferences(userDB.reportPreference))
