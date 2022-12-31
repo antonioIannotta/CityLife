@@ -29,7 +29,7 @@ data class SignUp(val name: String, val surname: String,
     private val username =  MessageDigest.getInstance("MD5")
         .digest((name + surname + email).toByteArray()).toString()
 
-    val client = HttpClient(CIO) {
+    private val client = HttpClient(CIO) {
         install(ContentNegotiation) {
             json(Json {
                 prettyPrint = true
@@ -59,7 +59,7 @@ data class SignUp(val name: String, val surname: String,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun signUp(): User {
 
-        client.get {
+        /*client.get {
             url {
                 protocol = URLProtocol.HTTP
                 host = "10.0.2.2"
@@ -74,6 +74,18 @@ data class SignUp(val name: String, val surname: String,
                 parameters.append("location", userDB.location)
                 parameters.append("reportPreference", userDB.reportPreference)
             }
+        }*/
+
+        client.post {
+            url {
+                protocol = URLProtocol.HTTP
+                host = "10.0.2.2"
+                port = 5000
+                path("/users/insertUser")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(userDB)
+
         }
 
         client.get {
