@@ -15,6 +15,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.http.ContentType.Application.Json
 import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.network.*
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.serializer
 import java.security.MessageDigest
@@ -61,7 +62,8 @@ data class SignUp(val name: String, val surname: String,
         client.post {
             url {
                 protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                host = "10.0.2.2"
+                port = 5000
                 path("/users/insertUser")
             }
             contentType(ContentType.Application.Json)
