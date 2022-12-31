@@ -10,8 +10,13 @@ import com.example.citylife.http.models.LocationDB
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import io.ktor.http.ContentType.Application.Json
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.serializer
 import java.security.MessageDigest
 
 data class SignUp(val name: String, val surname: String,
@@ -23,8 +28,15 @@ data class SignUp(val name: String, val surname: String,
     private val username =  MessageDigest.getInstance("MD5")
         .digest((name + surname + email).toByteArray()).toString()
 
-    val client = HttpClient(CIO)
-    val userDB = UserDB(
+    val client = HttpClient(CIO) {
+        install(ContentNegotiation) {
+            json(Json {
+                prettyPrint = true
+                isLenient = true
+            })
+        }
+    }
+    var userDB = UserDB(
         name,
         surname,
         username,
@@ -66,6 +78,8 @@ data class SignUp(val name: String, val surname: String,
                 parameters.append("distance", locationDB.distance)
             }
         }
+
+        println("insert user finito")
 
         return User(username, 0.0f, Location(""),
             emptyList<ReportType>().toMutableList())

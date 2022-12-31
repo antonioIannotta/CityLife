@@ -1,6 +1,8 @@
 package com.example.citylife.http.models
 
-@kotlinx.serialization.Serializable
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class UserDB(
     var name: String,
     var surname: String,
