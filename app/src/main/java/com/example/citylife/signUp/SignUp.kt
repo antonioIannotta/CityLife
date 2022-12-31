@@ -59,7 +59,7 @@ data class SignUp(val name: String, val surname: String,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun signUp(): User {
 
-        client.post {
+        client.get {
             url {
                 protocol = URLProtocol.HTTP
                 host = "10.0.2.2"
