@@ -20,19 +20,18 @@ class SignIn(val userEmail: String, val userPassword: String) {
      */
     suspend fun signIn(): User {
 
-        val userDB = httpHandlerReference.getClient().get {
+        val userDB: UserDB = httpHandlerReference.getClient().get {
             url {
                 protocol = URLProtocol.HTTP
                 host = httpHandlerReference.getHost()
                 port = httpHandlerReference.getPort()
-
-                /* TODO probabile percorso sbagliato */
-                path("/users")
+                path("/users/signInUser")
 
                 parameters.append("email", userEmail)
                 parameters.append("password", userPassword)
+
             }
-        }.body<UserDB>()
+        }.body()
 
         return User(userDB.username, userDB.distance.toFloat(),
             returnLocation(userDB.location), returnReportPreferences(userDB.reportPreference))

@@ -3,9 +3,9 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.model.report.ClientReport
+import com.example.citylife.model.report.ClientReportDB
 import com.example.citylife.model.report.ReportType
-import com.example.citylife.model.report.ServerReport
+import com.example.citylife.model.report.ServerReportDB
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
@@ -25,9 +25,9 @@ data class User(val username: String, var distance: Float = 0.0f,
     //Testo per la segnalazione
     private var textForReport: String = ""
     //Ultima segnalazione ricevuta
-    var lastReceivedReport = ServerReport("", "", "", "", "")
+    var lastReceivedReport = ServerReportDB("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
-    var notificationList = emptyList<ClientReport>().toMutableList()
+    var notificationList = emptyList<ClientReportDB>().toMutableList()
     val httpClient = HttpClient(CIO)
 
     /**
@@ -172,7 +172,7 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun newReport() =
-        ClientReport(getSpecificReportPreference().toString(),
+        ClientReportDB(getSpecificReportPreference().toString(),
             this.location.toString(),
             LocalDateTime.now().toString(),
             textForReport,
@@ -210,7 +210,7 @@ data class User(val username: String, var distance: Float = 0.0f,
                     host = "10.0.2.2:5000"
                     path("/users/lastReport")
                 }
-            }.body<ServerReport>()
+            }.body<ServerReportDB>()
 
             if (lastReceivedReport.equals(lastReportInDB)) {
                 continue
