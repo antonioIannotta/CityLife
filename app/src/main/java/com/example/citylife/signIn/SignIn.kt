@@ -2,6 +2,7 @@ package com.example.citylife.signIn
 
 import android.location.Location
 import com.example.citylife.http.models.UserDB
+import com.example.citylife.httpHandler.HttpHandler
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import io.ktor.client.*
@@ -12,18 +13,22 @@ import io.ktor.http.*
 
 class SignIn(val userEmail: String, val userPassword: String) {
 
-    val httpClient = HttpClient(CIO)
+    val httpHandlerReference: HttpHandler = HttpHandler()
 
     /**
      *Funzione che effettua il login dell'utente
      */
     suspend fun signIn(): User {
 
-        val userDB = httpClient.get {
+        val userDB = httpHandlerReference.getClient().get {
             url {
-                protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
+
+                /* TODO probabile percorso sbagliato */
                 path("/users")
+
                 parameters.append("email", userEmail)
                 parameters.append("password", userPassword)
             }
