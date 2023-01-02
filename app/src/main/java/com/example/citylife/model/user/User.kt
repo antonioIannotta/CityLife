@@ -3,7 +3,7 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.model.report.Report
+import com.example.citylife.model.report.ClientReport
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.report.ServerReport
 import io.ktor.client.*
@@ -27,7 +27,7 @@ data class User(val username: String, var distance: Float = 0.0f,
     //Ultima segnalazione ricevuta
     var lastReceivedReport = ServerReport("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
-    var notificationList = emptyList<Report>().toMutableList()
+    var notificationList = emptyList<ClientReport>().toMutableList()
     val httpClient = HttpClient(CIO)
 
     /**
@@ -172,7 +172,7 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun newReport() =
-        Report(getSpecificReportPreference().toString(),
+        ClientReport(getSpecificReportPreference().toString(),
             this.location.toString(),
             LocalDateTime.now().toString(),
             textForReport,

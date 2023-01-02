@@ -23,9 +23,7 @@ data class ServerReport(val type: String, val location: String,
     /**
      * Ritorna un Report con lo specifico username
      */
-    fun toReport(username: String): Report {
-        return Report(this.type, this.location, this.localDateTime, this.text, username)
+    fun toReport(username: String): ClientReport {
+        return ClientReport(this.type, this.location, this.localDateTime, this.text, username)
     }
 }
-
-//TODO: discutere su questa classe

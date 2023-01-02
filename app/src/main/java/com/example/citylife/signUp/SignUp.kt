@@ -29,7 +29,7 @@ data class SignUp(val name: String, val surname: String,
 
     val httpHandlerReference: HttpHandler = HttpHandler()
 
-    var userDB = UserDB(
+    private var userDB = UserDB(
         name,
         surname,
         username,
@@ -39,14 +39,12 @@ data class SignUp(val name: String, val surname: String,
         "",
         "[]"
     )
-    val locationDB = LocationDB(
+    private val locationDB = LocationDB(
         username,
         0.0f.toString(),
         ""
     )
 
-
-    /* TODO: non viene inserito "reportPreference" nel db, dipende da chiamata app o da web service? */
     /**
      *Funzione che si occupa della registrazione e memorizzazione dei dati nel DB
      */
