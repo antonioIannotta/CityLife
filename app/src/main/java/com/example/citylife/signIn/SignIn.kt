@@ -52,7 +52,7 @@ class SignIn(val userEmail: String, val userPassword: String) {
     }
 
     private fun returnReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
-        lateinit var reportPreferencesList: MutableList<ReportType>
+        val reportPreferencesList: MutableList<ReportType>
 
         if (reportPreferencesString == "[]") {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
