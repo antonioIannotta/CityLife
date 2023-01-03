@@ -16,8 +16,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.citylife.bottomnavigation.BottomBarScreen.Home.title
 import com.example.citylife.model.report.ReportType
+import com.example.citylife.model.user.User
 import com.example.citylife.ui.theme.CityLifeTheme
 import com.example.citylife.ui.theme.Teal200
+import com.example.citylife.utils.UserSerialization
+import kotlinx.coroutines.runBlocking
 
 class SelectReportTypeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -29,7 +32,9 @@ class SelectReportTypeActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background
                 ) {
-                    ReportTypeListSelector()
+                    var serializedUser = intent.getStringExtra("user")
+                    var user: User = UserSerialization().deserialize(serializedUser!!)
+                    ReportTypeListSelector(user)
                 }
             }
         }
@@ -37,7 +42,7 @@ class SelectReportTypeActivity : ComponentActivity() {
 }
 
 @Composable
-fun ReportTypeListSelector() {
+fun ReportTypeListSelector(user: User) {
 
     var checkPainter = painterResource(id = R.drawable.ic_baseline_check_24)
 
@@ -61,9 +66,28 @@ fun ReportTypeListSelector() {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                         items = items.mapIndexed { j, item ->
+                         items.mapIndexed { j, item ->
                              if (index == j) {
                                  item.copy(isSelected = !item.isSelected)
+                                 if (items[index].isSelected) {
+                                     println("items.title -->" + items[index].title.toString())
+                                     runBlocking {
+                                         user.addReportToPreferences(
+                                             ReportType.valueOf(
+                                                 items[index].title.toString()
+                                             )
+                                         )
+                                     }
+                                 } else {
+                                     println("items.title -->" + items[index].title.toString())
+                                     runBlocking {
+                                         user.removeReportTypeFromPreferences(
+                                             ReportType.valueOf(
+                                                 items[index].title.toString()
+                                             )
+                                         )
+                                     }
+                                 }
                              } else {
                                  item
                              }
@@ -92,6 +116,6 @@ fun ReportTypeListSelector() {
 @Composable
 fun DefaultPreview6() {
     CityLifeTheme {
-        ReportTypeListSelector()
+        //ReportTypeListSelector(user = user)
     }
 }

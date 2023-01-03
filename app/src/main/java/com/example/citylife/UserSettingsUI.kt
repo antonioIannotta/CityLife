@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import com.example.citylife.model.user.User
 import com.example.citylife.utils.UserSerialization
 
 @Composable
@@ -25,6 +26,7 @@ fun UserSettingsUI(context: Context, serializedUser: String) {
     var userIcon = painterResource(id = R.drawable.ic_round_supervised_user_circle_24)
     val rightArrowPainter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_right_24)
 
+    var user: User = UserSerialization().deserialize(serializedUser)
     var reportRange by remember { mutableStateOf(1f) }
 
     Column(
@@ -50,13 +52,7 @@ fun UserSettingsUI(context: Context, serializedUser: String) {
                         .size(100.dp)
                 )
                 Text(
-                    text = "username",
-                    fontSize = 15.sp,
-                    color = Color.Gray,
-                    textAlign = TextAlign.Center
-                )
-                Text(
-                    text = "Giga Chad",
+                    text = user.username,
                     fontSize = 25.sp,
                     textAlign = TextAlign.Center
                 )
@@ -91,7 +87,7 @@ fun UserSettingsUI(context: Context, serializedUser: String) {
                     onClick = {
                         val selectReportTypeActivity = Intent(context, SelectReportTypeActivity::class.java)
                         selectReportTypeActivity.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        selectReportTypeActivity.putExtra("user", UserSerialization().serialize(signedInUser))
+                        selectReportTypeActivity.putExtra("user", UserSerialization().serialize(user))
                         ContextCompat.startActivity(context, selectReportTypeActivity, null)
                     },
                 ) {

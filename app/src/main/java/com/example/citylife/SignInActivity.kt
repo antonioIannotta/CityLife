@@ -63,7 +63,6 @@ fun SignInUI(context: Context) {
     val passwordIconPainter = Icons.Default.Info
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    val workerPool: ExecutorService = Executors.newSingleThreadExecutor()
 
     fun signInButtonClick(email: String, password: String): User {
         lateinit var user: User
