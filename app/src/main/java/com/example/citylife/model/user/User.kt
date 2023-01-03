@@ -94,8 +94,21 @@ data class User(val username: String, var distance: Float = 0.0f,
      *Funzione che rimuove una tipologia di segnalazione
      * tra quelle a cui l'utente è effettivamente interessato
      */
-    fun removeReportTypeFromPreferences(report: ReportType) =
+    suspend fun removeReportTypeFromPreferences(report: ReportType) {
         reportPreferences.remove(report)
+
+        httpHandlerReference.getClient().get {
+            url {
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
+                path("/users/updateReportPreference")
+                parameters.append("username", username)
+                parameters.append("reportPreference", reportPreferences.toString())
+            }
+        }
+    }
+
 
     /**
      *Funzione che imposta la nuova posizione per l'utente
