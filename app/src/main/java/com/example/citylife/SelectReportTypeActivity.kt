@@ -34,6 +34,7 @@ class SelectReportTypeActivity : ComponentActivity() {
                 ) {
                     var serializedUser = intent.getStringExtra("user")
                     var user: User = UserSerialization().deserialize(serializedUser!!)
+                    println(user.reportPreferences)
                     ReportTypeListSelector(user)
                 }
             }
@@ -66,31 +67,29 @@ fun ReportTypeListSelector(user: User) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        runBlocking {
-                            items.mapIndexed { j, item ->
-                                if (index == j) {
-                                    item.copy(isSelected = !item.isSelected)
-                                    if (!items[index].isSelected) {
-                                        println("if items.title -->" + items[index].title.toString())
+                        items = items.mapIndexed { j, item ->
+                            if (index == j) {
+                                if (!item.isSelected) {
+                                    runBlocking {
                                         user.addReportToPreferences(
                                             ReportType.valueOf(
                                                 items[index].title.toString()
                                             )
                                         )
-                                        println("if dopo addReportToPref...")
-                                    } else {
-                                        println("else items.title -->" + items[index].title.toString())
+                                    }
+                                } else {
+                                    runBlocking {
                                         user.removeReportTypeFromPreferences(
                                             ReportType.valueOf(
                                                 items[index].title.toString()
                                             )
                                         )
-                                        println("else dopo addReportToPref...")
                                     }
-                                } else {
-                                    item
                                 }
-                            } as MutableList<ListItem>
+                                item.copy(isSelected = !item.isSelected)
+                            } else {
+                                item
+                            }
                         }
                     }
                     .padding(16.dp),
@@ -98,7 +97,8 @@ fun ReportTypeListSelector(user: User) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(text = items[index].title.toString())
-                if (items[index].isSelected) {
+                if (user.reportPreferences.contains(items[index].title)) {
+                    items[index].isSelected = true
                     Icon(
                         checkPainter,
                         contentDescription = "Selected",

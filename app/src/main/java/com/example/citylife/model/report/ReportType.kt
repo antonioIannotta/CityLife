@@ -9,5 +9,6 @@ enum class ReportType {
     TRANSPORTATION,
     INFRASTRUCTURE,
     ANIMALS,
-    ENVIRONMENT
+    ENVIRONMENT,
+    PADDLE
 }

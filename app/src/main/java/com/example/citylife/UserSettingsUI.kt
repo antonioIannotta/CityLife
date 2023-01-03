@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.citylife.model.user.User
 import com.example.citylife.utils.UserSerialization
+import kotlinx.coroutines.runBlocking
 
 @Composable
 fun UserSettingsUI(context: Context, serializedUser: String) {
@@ -77,7 +78,13 @@ fun UserSettingsUI(context: Context, serializedUser: String) {
                     color = Color.Gray
                 )
             }
-            Slider(value = reportRange, onValueChange = { reportRange = it })
+            Slider(value = reportRange, onValueChange = {
+                    reportRange = it
+                    runBlocking {
+                        user.changeDistance(it)
+                    }
+                }
+            )
             Row(
                 Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically,
