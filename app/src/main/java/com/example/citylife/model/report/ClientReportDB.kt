@@ -8,5 +8,6 @@ package com.example.citylife.model.report
  * testo,
  * username dell'utente che la invia
  */
-data class Report(val type: String, val location: String,
-                  val localDateTime: String, val text: String, val username: String) {}
+@kotlinx.serialization.Serializable
+data class ClientReportDB(val type: String, val location: String,
+                          val localDateTime: String, val text: String, val username: String) {}

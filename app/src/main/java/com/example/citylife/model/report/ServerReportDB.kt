@@ -5,13 +5,14 @@ package com.example.citylife.model.report
  * Contiene il tipo, la posizione, la data, il testo della segnalazione e la lista
  * degli utenti che sono interessati a quella segnalazione
  */
-data class ServerReport(val type: String, val location: String,
-                  val localDateTime: String, val text: String, val listOfUsername: String) {
+@kotlinx.serialization.Serializable
+data class ServerReportDB(val type: String, val location: String,
+                          val localDateTime: String, val text: String, val listOfUsername: String) {
 
     /**
      * Funzione che ritorna se due report depositati dal server sono uguali
      */
-    fun equals(serverReport: ServerReport): Boolean {
+    fun equals(serverReport: ServerReportDB): Boolean {
         return this.type == serverReport.type &&
                 this.location == serverReport.location &&
                 this.localDateTime == serverReport.localDateTime &&
@@ -22,9 +23,7 @@ data class ServerReport(val type: String, val location: String,
     /**
      * Ritorna un Report con lo specifico username
      */
-    fun toReport(username: String): Report {
-        return Report(this.type, this.location, this.localDateTime, this.text, username)
+    fun toReport(username: String): ClientReportDB {
+        return ClientReportDB(this.type, this.location, this.localDateTime, this.text, username)
     }
 }
-
-//TODO: discutere su questa classe

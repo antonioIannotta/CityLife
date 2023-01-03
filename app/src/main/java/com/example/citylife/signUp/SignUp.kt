@@ -3,11 +3,20 @@ package com.example.citylife.signUp
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.db.DatabaseOperations
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
+import com.example.citylife.http.models.UserDB
+import com.example.citylife.http.models.LocationDB
+import com.example.citylife.httpHandler.HttpHandler
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.*
+import io.ktor.util.network.*
 import java.security.MessageDigest
-import java.time.LocalDate
 
 data class SignUp(val name: String, val surname: String,
                   val email: String, val password: String) {
@@ -18,52 +27,54 @@ data class SignUp(val name: String, val surname: String,
     private val username =  MessageDigest.getInstance("MD5")
         .digest((name + surname + email).toByteArray()).toString()
 
-    /**
-     *Funzione che mappa dei valori che vengono memorizzati all'interno della collezione User
-     */
-    private val signUpMapOfValues = mapOf<String, String>(
-        "Name" to name,
-        "Username" to username,
-        "Distance" to 0f.toString(),
-        "Location" to "",
-        "Surname" to surname,
-        "Email" to email,
-        "Password" to password,
-        "ReportPreference" to "[]"
+    val httpHandlerReference: HttpHandler = HttpHandler()
+
+    private var userDB = UserDB(
+        name,
+        surname,
+        username,
+        email,
+        password,
+        0.0f.toString(),
+        "",
+        "[]"
+    )
+    private val locationDB = LocationDB(
+        username,
+        0.0f.toString(),
+        ""
     )
 
     /**
-     *Funzioen che si occupa della registrazione e memorizzazione dei dati nel DB
+     *Funzione che si occupa della registrazione e memorizzazione dei dati nel DB
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun signUp(): User? {
+    suspend fun signUp(): User {
 
-        var user: User? = null
-
-        if (isEmailUnique(email)) {
-            //FirebaseEmailOperations().sendEmail(email)
-            //if (FirebaseEmailOperations().completeSignUp(email) == "OK") {
-                DatabaseOperations()
-                    .insertUser(signUpMapOfValues)
-                user = User(username, 0.0f, Location(""), emptyList<ReportType>().toMutableList())
+        httpHandlerReference.getClient().post {
+            url {
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
+                path("/users/insertUser")
             }
-        return user
-    }
+            contentType(ContentType.Application.Json)
+            setBody(userDB)
+        }
 
-    /**
-     *Funzione che verifica che la mail inserita non sia già stata utilizzata
-     */
-    fun isEmailUnique(email: String): Boolean {
-        return check(email)
-    }
+        httpHandlerReference.getClient().get {
+            url {
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
+                path("/location/insertLocationAndDistance")
+                parameters.append("username", locationDB.username)
+                parameters.append("location", locationDB.location)
+                parameters.append("distance", locationDB.distance)
+            }
+        }
 
-    /**
-     *Funzione che effettua la verificad ella presenza all'interno
-     * della collezione di un valore passato come parametro
-     */
-    fun check(value: String): Boolean {
-        return DatabaseOperations().readAllUsers().count {
-                document -> document.entries.toString().contains(value)
-        } == 0
+        return User(username, 0.0f, Location(""),
+            emptyList<ReportType>().toMutableList())
     }
 }

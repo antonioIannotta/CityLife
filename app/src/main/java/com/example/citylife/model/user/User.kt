@@ -3,17 +3,16 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
-import com.example.citylife.db.ClientDatabaseOperations
-import com.example.citylife.db.DatabaseOperations
-import com.example.citylife.db.ServerDatabaseOperations
-import com.example.citylife.model.report.Report
+import com.example.citylife.model.report.ClientReportDB
 import com.example.citylife.model.report.ReportType
-import com.example.citylife.model.report.ServerReport
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.Updates
+import com.example.citylife.model.report.ServerReportDB
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import java.time.LocalDateTime
-import java.util.concurrent.Callable
-import java.util.concurrent.Executors
 
 /**
  * classe che rappresenta uno specifico utente.
@@ -26,19 +25,25 @@ data class User(val username: String, var distance: Float = 0.0f,
     //Testo per la segnalazione
     private var textForReport: String = ""
     //Ultima segnalazione ricevuta
-    var lastReceivedReport = ServerReport("", "", "", "", "")
+    var lastReceivedReport = ServerReportDB("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
-    var notificationList = emptyList<Report>().toMutableList()
+    var notificationList = emptyList<ClientReportDB>().toMutableList()
+    val httpClient = HttpClient(CIO)
 
     /**
      *Funzione che consente di modificare la distanza di interesse.
      */
-    fun changeDistance(newDistance: Float) {
+    suspend fun changeDistance(newDistance: Float) {
         distance = newDistance
-        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
-            Filters.eq("Username", this.username),
-            Updates.set("Distance", this.distance.toString())
-        )
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/updateDistance")
+                parameters.append("username", username)
+                parameters.append("distance", distance.toString())
+            }
+        }
     }
 
     /**
@@ -51,13 +56,19 @@ data class User(val username: String, var distance: Float = 0.0f,
     /**
      *Funzione che aggiunge una tipologia di segnalazione a quelle di interesse
      */
-    fun addReportToPreferences(report: ReportType) {
+    suspend fun addReportToPreferences(report: ReportType) {
 
         reportPreferences.add(report)
-        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
-            Filters.eq("Username", this.username),
-            Updates.set("ReportPreferences", this.reportPreferences.toString())
-        )
+
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/updateReportPreference")
+                parameters.append("username", username)
+                parameters.append("reportPreference", reportPreferences.toString())
+            }
+        }
     }
 
     /**
@@ -87,13 +98,19 @@ data class User(val username: String, var distance: Float = 0.0f,
      *Funzione che imposta la nuova posizione per l'utente
      */
     @JvmName("setLocation1")
-    fun setLocation(location: Location)  {
+    suspend fun setLocation(location: Location)  {
         this.location = location
         val locationString = strLatitude(location) + " - " + strLongitude(location)
-        DatabaseOperations().getCollectionFromDatabase("User").updateOne(
-            Filters.eq("Username", this.username),
-            Updates.set("Location", locationString)
-        )
+
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/updateLocation")
+                parameters.append("username", username)
+                parameters.append("location", locationString)
+            }
+        }
     }
 
     /**
@@ -120,12 +137,21 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che aggiorna la posizione dell'utente e la distanza
      * per la quale è interessato a ricevere le segnalazioni
      */
-    fun updateLocationOnDB() =
-        DatabaseOperations()
-            .insertOrUpdateLocationAndDistance(this.username, mapOf(
-                "Location" to strLatitude(getLocation()) + "-" + strLongitude(getLocation()),
-                "Distance" to getDistance().toString()
-            ))
+    suspend fun updateLocationAndDistanceOnDB() {
+
+        val locationString = strLatitude(location) + " - " + strLongitude(location)
+
+        httpClient.get {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2"
+                path("/location/updateLocationAndDistance")
+                parameters.append("username", username)
+                parameters.append("location", locationString)
+                parameters.append("distance", distance.toString())
+            }
+        }
+    }
 
 
     /**
@@ -146,7 +172,7 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     @RequiresApi(Build.VERSION_CODES.O)
     fun newReport() =
-        Report(getSpecificReportPreference().toString(),
+        ClientReportDB(getSpecificReportPreference().toString(),
             this.location.toString(),
             LocalDateTime.now().toString(),
             textForReport,
@@ -156,32 +182,47 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che invia una segnalazione al server.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun sendReport() =
-        ClientDatabaseOperations()
-            .insertReport(newReport())
+    suspend fun sendReport() {
+
+        httpClient.post {
+            url {
+                protocol = URLProtocol.HTTPS
+                host = "10.0.2.2:5000"
+                path("/users/insertReport")
+            }
+            contentType(ContentType.Application.Json)
+            setBody(newReport())
+        }
+    }
 
     /**
      * Funzione che si occupa di recuperare le notifiche di interesse per l'utente
      */
-    fun receiveReport() {
-        val workerPool = Executors.newSingleThreadExecutor()
-        workerPool.submit(Callable {
-            while (true) {
-                var lastReportInDB = ServerDatabaseOperations().composeReportFromDocument(
-                    ServerDatabaseOperations().getServerCollection().find().first()
-                )
+    suspend fun receiveReport() {
+        val httpRequestBuilder = HttpRequestBuilder()
+        httpRequestBuilder.method = HttpMethod.Get
+        httpRequestBuilder.url("10.0.2.2:5000/users/lastReport")
 
-                if (lastReceivedReport.equals(lastReportInDB)) {
-                    continue
-                } else {
-                    if (lastReportInDB.listOfUsername.contains(this.username)) {
-                        lastReceivedReport = lastReportInDB
-                        if (reportPreferences.contains(ReportType.valueOf(lastReportInDB.type))) {
-                            notificationList.add(lastReceivedReport.toReport(this.username))
-                        }
+        while (true) {
+            var lastReportInDB = httpClient.get {
+                url {
+                    protocol = URLProtocol.HTTPS
+                    host = "10.0.2.2:5000"
+                    path("/users/lastReport")
+                }
+            }.body<ServerReportDB>()
+
+            if (lastReceivedReport.equals(lastReportInDB)) {
+                continue
+            } else {
+                if (lastReportInDB.listOfUsername.contains(this.username)) {
+                    lastReceivedReport = lastReportInDB
+                    if (reportPreferences.contains(ReportType.valueOf(lastReportInDB.type))) {
+                        notificationList.add(lastReceivedReport.toReport(this.username))
                     }
                 }
             }
-        })
+        }
     }
 }
+
