@@ -42,7 +42,7 @@ class UserSerialization {
     }
 
     private fun composeReportPreferences(reportPreferencesString: String): MutableList<ReportType> {
-        lateinit var reportPreferencesList: MutableList<ReportType>
+        var reportPreferencesList = emptyList<ReportType>().toMutableList()
 
         if (reportPreferencesString == "[]") {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
