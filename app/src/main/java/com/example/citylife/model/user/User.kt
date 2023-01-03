@@ -3,6 +3,7 @@ package com.example.citylife.model.user
 import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.citylife.httpHandler.HttpHandler
 import com.example.citylife.model.report.ClientReportDB
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.report.ServerReportDB
@@ -28,17 +29,18 @@ data class User(val username: String, var distance: Float = 0.0f,
     var lastReceivedReport = ServerReportDB("", "", "", "", "")
     //Lista delle notifiche che sono di interesse per l'utente
     var notificationList = emptyList<ClientReportDB>().toMutableList()
-    val httpClient = HttpClient(CIO)
+    val httpHandlerReference: HttpHandler = HttpHandler()
 
     /**
      *Funzione che consente di modificare la distanza di interesse.
      */
     suspend fun changeDistance(newDistance: Float) {
         distance = newDistance
-        httpClient.get {
+        httpHandlerReference.getClient().get {
             url {
-                protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
                 path("/users/updateDistance")
                 parameters.append("username", username)
                 parameters.append("distance", distance.toString())
@@ -60,10 +62,11 @@ data class User(val username: String, var distance: Float = 0.0f,
 
         reportPreferences.add(report)
 
-        httpClient.get {
+        httpHandlerReference.getClient().get {
             url {
-                protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
                 path("/users/updateReportPreference")
                 parameters.append("username", username)
                 parameters.append("reportPreference", reportPreferences.toString())
@@ -102,10 +105,11 @@ data class User(val username: String, var distance: Float = 0.0f,
         this.location = location
         val locationString = strLatitude(location) + " - " + strLongitude(location)
 
-        httpClient.get {
+        httpHandlerReference.getClient().get {
             url {
-                protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
                 path("/users/updateLocation")
                 parameters.append("username", username)
                 parameters.append("location", locationString)
@@ -141,10 +145,11 @@ data class User(val username: String, var distance: Float = 0.0f,
 
         val locationString = strLatitude(location) + " - " + strLongitude(location)
 
-        httpClient.get {
+        httpHandlerReference.getClient().get {
             url {
-                protocol = URLProtocol.HTTPS
-                host = "10.0.2.2"
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
                 path("/location/updateLocationAndDistance")
                 parameters.append("username", username)
                 parameters.append("location", locationString)
@@ -184,10 +189,11 @@ data class User(val username: String, var distance: Float = 0.0f,
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun sendReport() {
 
-        httpClient.post {
+        httpHandlerReference.getClient().post {
             url {
-                protocol = URLProtocol.HTTPS
-                host = "10.0.2.2:5000"
+                protocol = URLProtocol.HTTP
+                host = httpHandlerReference.getHost()
+                port = httpHandlerReference.getPort()
                 path("/users/insertReport")
             }
             contentType(ContentType.Application.Json)
@@ -199,15 +205,12 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che si occupa di recuperare le notifiche di interesse per l'utente
      */
     suspend fun receiveReport() {
-        val httpRequestBuilder = HttpRequestBuilder()
-        httpRequestBuilder.method = HttpMethod.Get
-        httpRequestBuilder.url("10.0.2.2:5000/users/lastReport")
-
         while (true) {
-            var lastReportInDB = httpClient.get {
+            var lastReportInDB = httpHandlerReference.getClient().get {
                 url {
-                    protocol = URLProtocol.HTTPS
-                    host = "10.0.2.2:5000"
+                    protocol = URLProtocol.HTTP
+                    host = httpHandlerReference.getHost()
+                    port = httpHandlerReference.getPort()
                     path("/users/lastReport")
                 }
             }.body<ServerReportDB>()
