@@ -49,8 +49,8 @@ class UserSerialization {
         } else {
             var reportPreferences = reportPreferencesString.drop(1)
             reportPreferences = reportPreferences.dropLast(1)
-            reportPreferences.trim().split(",").forEach {
-                element -> reportPreferencesList.add(ReportType.valueOf(element.uppercase()))
+            reportPreferences.split(",").forEach {
+                element -> reportPreferencesList.add(ReportType.valueOf(element.uppercase().trim()))
             }
         }
         return reportPreferencesList

@@ -60,7 +60,7 @@ class SignIn(val userEmail: String, val userPassword: String) {
             var reportPreferences = reportPreferencesString.drop(1).dropLast(1)
             reportPreferencesList = emptyList<ReportType>().toMutableList()
             reportPreferences.split(",").forEach { element ->
-                reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))
+                reportPreferencesList.add(ReportType.valueOf(element.uppercase().trim()))
             }
         }
         return reportPreferencesList
