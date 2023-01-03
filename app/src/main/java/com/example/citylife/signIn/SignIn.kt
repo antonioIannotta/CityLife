@@ -57,8 +57,7 @@ class SignIn(val userEmail: String, val userPassword: String) {
         if (reportPreferencesString == "[]") {
             reportPreferencesList = emptyList<ReportType>().toMutableList()
         } else {
-            var reportPreferences = reportPreferencesString.drop(1)
-            reportPreferences = reportPreferencesString.dropLast(1)
+            var reportPreferences = reportPreferencesString.drop(1).dropLast(1)
             reportPreferencesList = emptyList<ReportType>().toMutableList()
             reportPreferences.split(",").forEach { element ->
                 reportPreferencesList.add(ReportType.valueOf(element.toString().uppercase()))

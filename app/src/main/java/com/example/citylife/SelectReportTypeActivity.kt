@@ -66,32 +66,32 @@ fun ReportTypeListSelector(user: User) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                         items.mapIndexed { j, item ->
-                             if (index == j) {
-                                 item.copy(isSelected = !item.isSelected)
-                                 if (items[index].isSelected) {
-                                     println("items.title -->" + items[index].title.toString())
-                                     runBlocking {
-                                         user.addReportToPreferences(
-                                             ReportType.valueOf(
-                                                 items[index].title.toString()
-                                             )
-                                         )
-                                     }
-                                 } else {
-                                     println("items.title -->" + items[index].title.toString())
-                                     runBlocking {
-                                         user.removeReportTypeFromPreferences(
-                                             ReportType.valueOf(
-                                                 items[index].title.toString()
-                                             )
-                                         )
-                                     }
-                                 }
-                             } else {
-                                 item
-                             }
-                         } as MutableList<ListItem>
+                        runBlocking {
+                            items.mapIndexed { j, item ->
+                                if (index == j) {
+                                    item.copy(isSelected = !item.isSelected)
+                                    if (!items[index].isSelected) {
+                                        println("if items.title -->" + items[index].title.toString())
+                                        user.addReportToPreferences(
+                                            ReportType.valueOf(
+                                                items[index].title.toString()
+                                            )
+                                        )
+                                        println("if dopo addReportToPref...")
+                                    } else {
+                                        println("else items.title -->" + items[index].title.toString())
+                                        user.removeReportTypeFromPreferences(
+                                            ReportType.valueOf(
+                                                items[index].title.toString()
+                                            )
+                                        )
+                                        println("else dopo addReportToPref...")
+                                    }
+                                } else {
+                                    item
+                                }
+                            } as MutableList<ListItem>
+                        }
                     }
                     .padding(16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
