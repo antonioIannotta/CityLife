@@ -1,8 +1,15 @@
 package com.example.citylife
 
+import android.Manifest.permission.ACCESS_COARSE_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
+import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
+import android.location.LocationRequest
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
@@ -20,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,8 +41,18 @@ import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.example.citylife.ui.theme.CityLifeTheme
 import com.example.citylife.utils.UserSerialization
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationServices
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 
 class AppMainActivity : ComponentActivity() {
+
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
+    private lateinit var user: User
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -45,15 +63,85 @@ class AppMainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     var serializedUser = intent.getStringExtra("user")
-                    var user = UserSerialization().deserialize(serializedUser!!)
+                    user = UserSerialization().deserialize(serializedUser!!)
 
-                    /* TODO questa è l'activity dove l'utente starà per più tempo subito dopo il
-                        login per cui questo sia il posto giusto in cui valutare i cambiamenti
-                         della location. Credo che sia più sensato ottenere tutto qui nel "main"
-                         dell'activity piuttosto che dentro un metodo composable */
+                    fusedLocationProviderClient = LocationServices
+                        .getFusedLocationProviderClient(this)
+
+                    Executors.newSingleThreadExecutor().submit(Runnable {
+                        while (true) {
+                            getLocation()
+                            Thread.sleep(100000)
+                        }
+                    })
 
                     BottomNav(applicationContext, serializedUser!!)
                 }
+            }
+        }
+    }
+
+    private fun isLocationEnabled(): Boolean {
+        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager
+            .isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    private fun checkPermission(): Boolean {
+        if (ActivityCompat.checkSelfPermission(
+                this,
+                ACCESS_COARSE_LOCATION
+        ) == PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(
+                    this,
+                    ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true
+        }
+        return false
+    }
+
+    private fun requestPermission() {
+        ActivityCompat.requestPermissions(
+            this,
+            arrayOf(
+                ACCESS_COARSE_LOCATION,
+                ACCESS_FINE_LOCATION
+            ),
+            44
+        )
+    }
+
+    @SuppressLint("MissingSuperCall")
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        if (requestCode == 44) {
+            if((grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+                getLocation()
+            }
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun getLocation() {
+        if (checkPermission()) {
+            if (isLocationEnabled()) {
+                fusedLocationProviderClient.lastLocation.addOnCompleteListener(this) { task ->
+                    val location: Location? = task.result
+                    if (location != null) {
+                        runBlocking {
+                            user.setLocation(location)
+                            user.updateLocationAndDistanceOnDB()
+                        }
+                    }
+                }
+            } else {
+                Toast.makeText(this, "Please turn on location!", Toast.LENGTH_LONG).show()
             }
         }
     }
