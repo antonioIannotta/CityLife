@@ -45,6 +45,13 @@ class AppMainActivity : ComponentActivity() {
                     color = MaterialTheme.colors.background
                 ) {
                     var serializedUser = intent.getStringExtra("user")
+                    var user = UserSerialization().deserialize(serializedUser!!)
+
+                    /* TODO questa è l'activity dove l'utente starà per più tempo subito dopo il
+                        login per cui questo sia il posto giusto in cui valutare i cambiamenti
+                         della location. Credo che sia più sensato ottenere tutto qui nel "main"
+                         dell'activity piuttosto che dentro un metodo composable */
+
                     BottomNav(applicationContext, serializedUser!!)
                 }
             }
