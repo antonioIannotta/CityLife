@@ -82,6 +82,7 @@ fun UserSettingsUI(context: Context, serializedUser: String) {
                     reportRange = it
                     runBlocking {
                         user.changeDistance(it)
+                        user.updateLocationAndDistanceOnDB()
                     }
                 }
             )
