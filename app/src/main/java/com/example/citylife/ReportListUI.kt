@@ -29,9 +29,11 @@ fun ReportsListUI(serializedUser: String) {
     println("avvio thread")
 
     Executors.newSingleThreadExecutor().submit(Runnable {
-        runBlocking {
-            println("sto per eseguire la receive report ----> ")
-            user.receiveReport()
+        while(true) {
+            runBlocking {
+                println("sto per eseguire la receive report ----> ")
+                notificationList = user.receiveReport()
+            }
         }
     })
 
