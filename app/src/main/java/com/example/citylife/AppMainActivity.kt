@@ -42,10 +42,8 @@ import com.example.citylife.model.user.User
 import com.example.citylife.ui.theme.CityLifeTheme
 import com.example.citylife.utils.UserSerialization
 import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationServices
 import kotlinx.coroutines.runBlocking
-import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 
 class AppMainActivity : ComponentActivity() {

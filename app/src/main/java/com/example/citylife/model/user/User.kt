@@ -221,6 +221,7 @@ data class User(val username: String, var distance: Float = 0.0f,
      */
     suspend fun receiveReport() {
         while (true) {
+            println("sono dentro receive report inizio")
             var lastReportInDB = httpHandlerReference.getClient().get {
                 url {
                     protocol = URLProtocol.HTTP
@@ -229,6 +230,8 @@ data class User(val username: String, var distance: Float = 0.0f,
                     path("/users/lastReport")
                 }
             }.body<ServerReportDB>()
+
+            println("sono dentro receive report fine prima dell'if")
 
             if (lastReceivedReport.equals(lastReportInDB)) {
                 continue

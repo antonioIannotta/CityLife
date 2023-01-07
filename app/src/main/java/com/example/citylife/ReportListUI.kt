@@ -6,7 +6,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
@@ -16,18 +16,32 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.citylife.model.report.ClientReportDB
 import com.example.citylife.utils.UserSerialization
+import kotlinx.coroutines.runBlocking
+import java.util.concurrent.Executors
 
 @Composable
-fun ReportsListUI(serializedUser: String, names: List<String> = List(50){"$it"}) {
-
+fun ReportsListUI(serializedUser: String) {
     var user = UserSerialization().deserialize(serializedUser)
+    var notificationList: MutableList<ClientReportDB> by remember { mutableStateOf(user.notificationList) }
+
+    println("avvio thread")
+
+    Executors.newSingleThreadExecutor().submit(Runnable {
+        runBlocking {
+            println("sto per eseguire la receive report ----> ")
+            user.receiveReport()
+        }
+    })
 
     LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
-        items(items = names) {
-                name -> ReportItem("Title", "Description text", "5th avenue", painterResource(
-            id = R.drawable.smart_city_logo), "15.56")
+        items(items = notificationList) {
+                notification -> ReportItem(notification.type, notification.text, notification.location, painterResource(
+            id = R.drawable.smart_city_logo), notification.localDateTime)
         }
+        println("ho finito tutto")
+
     }
 }
 
