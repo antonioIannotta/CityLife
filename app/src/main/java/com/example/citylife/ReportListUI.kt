@@ -1,5 +1,7 @@
 package com.example.citylife
 
+import android.app.Activity
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,7 +30,22 @@ fun ReportsListUI(serializedUser: String) {
 
     println("avvio thread")
 
-    Executors.newSingleThreadExecutor().submit(Runnable {
+    LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+        Activity().runOnUiThread(Runnable {
+            while(true) {
+                runBlocking {
+                    println("sto per eseguire la receive report ----> ")
+                    notificationList = user.receiveReport()
+                    items(items = notificationList) {
+                            notification -> ReportItem(notification.type, notification.text, notification.location, painterResource(
+                        id = R.drawable.smart_city_logo), notification.localDateTime)
+                    }
+                }
+            }
+        })
+    }
+
+    /*Executors.newSingleThreadExecutor().submit(Runnable {
         while(true) {
             runBlocking {
                 println("sto per eseguire la receive report ----> ")
@@ -44,7 +61,7 @@ fun ReportsListUI(serializedUser: String) {
         }
         println("ho finito tutto")
 
-    }
+    }*/
 }
 
 @Composable
