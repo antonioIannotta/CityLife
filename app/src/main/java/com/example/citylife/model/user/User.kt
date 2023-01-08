@@ -220,16 +220,20 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che si occupa di recuperare le notifiche di interesse per l'utente
      */
     suspend fun receiveReport(): MutableList<ClientReportDB> {
-        var lastReportInDB = httpHandlerReference.getClient().get {
+        var reportOfInterest = httpHandlerReference.getClient().get {
             url {
                 protocol = URLProtocol.HTTP
                 host = httpHandlerReference.getHost()
                 port = httpHandlerReference.getPort()
                 path("/users/lastReport")
             }
-        }.body<ServerReportDB>()
+        }.body<MutableList<ClientReportDB>>()
 
-        if (lastReceivedReport.equals(lastReportInDB)) {
+        notificationList = reportOfInterest.filter {
+            report -> reportPreferences.contains(ReportType.valueOf(report.type))
+        }.toMutableList()
+
+        /*if (lastReceivedReport.equals(lastReportInDB)) {
                 println("No change occurred")
         } else {
             if (lastReportInDB.listOfUsername.contains(this.username)) {
@@ -238,7 +242,7 @@ data class User(val username: String, var distance: Float = 0.0f,
                     notificationList.add(lastReceivedReport.toReport(this.username))
                 }
             }
-        }
+        }*/
         return notificationList
     }
 }
