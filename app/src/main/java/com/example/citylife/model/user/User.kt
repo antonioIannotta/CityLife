@@ -226,6 +226,7 @@ data class User(val username: String, var distance: Float = 0.0f,
                 host = httpHandlerReference.getHost()
                 port = httpHandlerReference.getPort()
                 path("/users/lastReport")
+                parameters.append("username", username)
             }
         }.body<MutableList<ClientReportDB>>()
 
