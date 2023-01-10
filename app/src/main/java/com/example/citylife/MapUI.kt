@@ -1,11 +1,14 @@
 package com.example.citylife
 
 import android.content.Context
+import android.location.Location
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -121,6 +124,17 @@ fun MapUI(serializedUser: String, context: Context) {
                     }.body()
                 }
 
+                //userList.forEach { user ->
+                    Circle(
+                        center = LatLng(37.922, -122.784
+                            /*user.location.substringBefore(" -", user.location).toDouble(),
+                            user.location.substringAfter("- ", user.location).toDouble()*/
+                        ),
+                        radius = 2.0,
+                        tag = "Omino",
+                        fillColor = Color.White
+                    )
+                //}
             }
         }
     }
