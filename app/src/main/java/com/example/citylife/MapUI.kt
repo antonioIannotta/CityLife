@@ -6,7 +6,9 @@ import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.example.citylife.model.report.ClientReportDB
 import com.example.citylife.model.user.User
 import com.example.citylife.utils.UserSerialization
@@ -14,6 +16,7 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.compose.*
+import com.google.maps.android.heatmaps.HeatmapTileProvider
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.time.LocalDateTime.parse
@@ -97,22 +100,18 @@ fun MapUI(serializedUser: String, context: Context) {
                         snippet = "$reportPostingTime - ${notification.text}"
                     )
                 }
+
+                val usersList
             }
         }
     }
 }
 
+/*
 @Composable
 fun HeatMap(locationsList: List<LatLng>?, context: Context) {
 
-    var mapView: MapView? = null
-    val callback = OnMapReadyCallback { googleMap ->
-        googleMap.addMarker(
-            MarkerOptions().position(LatLng(37.782551, -122.435147))
-        )
-    }
-
-    /*var mapView = MapView(context)
+    var mapView = MapView(context)
     val googleMap = mapView.getMapAsync {
 
 
@@ -128,7 +127,7 @@ fun HeatMap(locationsList: List<LatLng>?, context: Context) {
                 .tileProvider(heatmapTileProvider)
                 .visible(true)
         )
-    }*/
+    }
 
     Column(
         Modifier
@@ -136,5 +135,12 @@ fun HeatMap(locationsList: List<LatLng>?, context: Context) {
             .then(Modifier.padding(16.dp))
     ) {
 
+        AndroidView(
+            factory = {
+                fragment
+            },
+            modifier = Modifier.fillMaxSize()
+        )
     }
 }
+*/
