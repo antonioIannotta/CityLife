@@ -9,6 +9,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import com.example.citylife.http.models.UserDB
+import com.example.citylife.httpHandler.HttpHandler
 import com.example.citylife.model.report.ClientReportDB
 import com.example.citylife.model.user.User
 import com.example.citylife.utils.UserSerialization
@@ -17,6 +19,9 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.*
 import com.google.maps.android.compose.*
 import com.google.maps.android.heatmaps.HeatmapTileProvider
+import io.ktor.client.call.*
+import io.ktor.client.request.*
+import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import java.time.Instant
 import java.time.LocalDateTime.parse
@@ -32,6 +37,8 @@ fun String.substringAfter(delimiter: Char, missingDelimiterValue: String = this)
     val index = indexOf(delimiter)
     return if (index == -1) missingDelimiterValue else substring(index + 1, length)
 }
+
+val httpHandler = HttpHandler()
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -101,7 +108,19 @@ fun MapUI(serializedUser: String, context: Context) {
                     )
                 }
 
-                val usersList
+               var userList = emptyList<UserDB>().toMutableList()
+
+                runBlocking {
+                    userList = httpHandler.getClient().get {
+                        url {
+                            protocol = URLProtocol.HTTP
+                            host = httpHandler.getHost()
+                            port = httpHandler.getPort()
+                            path("/users")
+                        }
+                    }.body()
+                }
+
             }
         }
     }
