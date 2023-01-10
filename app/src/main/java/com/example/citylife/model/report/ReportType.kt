@@ -6,9 +6,11 @@ package com.example.citylife.model.report
 enum class ReportType {
     INCIDENT,
     ROBBERY,
-    TRANSPORTATION,
+    IMPASSABLE_STREET,
     INFRASTRUCTURE,
+    SHOP_DAMAGE,
+    CROWD,
     ANIMALS,
+    UNSAFE_AREA,
     ENVIRONMENT,
-    PADDLE
 }

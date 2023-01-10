@@ -14,7 +14,7 @@ class UserTest {
     }
 
     @Test
-    fun distanceTest() {
+    suspend fun distanceTest() {
         val user = User("Antonio")
         user.changeDistance(5.0f)
         assertEquals(user.getDistance(), 5.0f)

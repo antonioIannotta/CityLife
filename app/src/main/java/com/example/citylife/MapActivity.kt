@@ -6,13 +6,8 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
-import androidx.core.content.ContextCompat
 import com.example.citylife.ui.theme.CityLifeTheme
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -25,12 +20,12 @@ class MapActivity : ComponentActivity() {
             CityLifeTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colors.background) {
-                    MapElement()
+                    //MapElement()
                 }
             }
         }
     }
-}
+}/*
 
 @Composable
 fun MapElement() {
@@ -45,15 +40,6 @@ fun MapElement() {
     ) {
         Row(
         ) {
-            FloatingActionButton(
-                modifier = Modifier
-                    .align(Alignment.Bottom)
-                    .padding(12.dp)
-                    .zIndex(99999F),
-                onClick = {}
-            ) {
-                Text("+")
-            }
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState
@@ -70,7 +56,7 @@ fun MapElement() {
 
     var uiSettings by remember { mutableStateOf(MapUiSettings()) }
     var properties by remember {
-        mutableStateOf(MapProperties(mapType = MapType.SATELLITE))
+        mutableStateOf(MapProperties(mapType = MapType.NORMAL))
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -86,12 +72,12 @@ fun MapElement() {
             }
         )
     }
-}
+}*/
 
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview4() {
     CityLifeTheme {
-        MapElement()
+       // MapElement()
     }
 }

@@ -14,11 +14,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.citylife.bottomnavigation.BottomBarScreen.Home.title
 import com.example.citylife.model.report.ReportType
 import com.example.citylife.model.user.User
 import com.example.citylife.ui.theme.CityLifeTheme
-import com.example.citylife.ui.theme.Teal200
 import com.example.citylife.utils.UserSerialization
 import kotlinx.coroutines.runBlocking
 

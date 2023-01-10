@@ -62,8 +62,6 @@ data class User(val username: String, var distance: Float = 0.0f,
 
         reportPreferences.add(report)
 
-        println("reportPreferences -------> " + reportPreferences.toString())
-
         httpHandlerReference.getClient().get {
             url {
                 protocol = URLProtocol.HTTP
@@ -225,7 +223,7 @@ data class User(val username: String, var distance: Float = 0.0f,
                 protocol = URLProtocol.HTTP
                 host = httpHandlerReference.getHost()
                 port = httpHandlerReference.getPort()
-                path("/users/lastReport")
+                path("/users/getReportForUser")
                 parameters.append("username", username)
             }
         }.body<MutableList<ClientReportDB>>()

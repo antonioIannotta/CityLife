@@ -7,11 +7,12 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
-import android.location.LocationRequest
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -51,6 +52,7 @@ class AppMainActivity : ComponentActivity() {
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var user: User
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -145,6 +147,7 @@ class AppMainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomNav(context: Context, serializedUser: String) {
     val navController = rememberNavController()
@@ -161,6 +164,7 @@ fun BottomNav(context: Context, serializedUser: String) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun BottomNavGraph(
     navController: NavHostController,
@@ -176,10 +180,10 @@ fun BottomNavGraph(
             ReportsListUI(serializedUser = serializedUser)
         }
         composable(route =  BottomBarScreen.Report.route) {
-            /*UserSettingsUI(
+            MapUI(
                 serializedUser = serializedUser,
                 context = context
-            )*/
+            )
         }
         composable(route =  BottomBarScreen.UserSettings.route) {
             UserSettingsUI(
@@ -249,7 +253,9 @@ fun RowScope.AddItem(
         ) {
             Icon(
                 painter = painterResource(id = if (selected) screen.icon_focused else screen.icon),
-                modifier = Modifier.height(40.dp).width(40.dp),
+                modifier = Modifier
+                    .height(40.dp)
+                    .width(40.dp),
                 contentDescription = "icon",
                 tint = contentColor
             )
@@ -263,6 +269,7 @@ fun RowScope.AddItem(
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Preview(showBackground = true)
 @Composable
 fun AppMainPreview() {
