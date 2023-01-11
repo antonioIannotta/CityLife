@@ -179,11 +179,14 @@ fun BottomNavGraph(
         composable(route =  BottomBarScreen.Home.route) {
             ReportsListUI(serializedUser = serializedUser)
         }
-        composable(route =  BottomBarScreen.Report.route) {
+        composable(route =  BottomBarScreen.Map.route) {
             MapUI(
                 serializedUser = serializedUser,
                 context = context
             )
+        }
+        composable(route =  BottomBarScreen.Report.route) {
+            NewReportUI()
         }
         composable(route =  BottomBarScreen.UserSettings.route) {
             UserSettingsUI(
@@ -199,6 +202,7 @@ fun BottomNavGraph(
 fun BottomBar(navController: NavHostController) {
     val screens = listOf(
         BottomBarScreen.Home,
+        BottomBarScreen.Map,
         BottomBarScreen.Report,
         BottomBarScreen.UserSettings
     )
