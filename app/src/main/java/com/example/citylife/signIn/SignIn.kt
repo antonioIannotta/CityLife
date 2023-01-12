@@ -1,6 +1,8 @@
 package com.example.citylife.signIn
 
 import android.location.Location
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.citylife.http.models.UserDB
 import com.example.citylife.httpHandler.HttpHandler
 import com.example.citylife.model.report.ReportType
@@ -10,6 +12,7 @@ import io.ktor.client.call.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.request.*
 import io.ktor.http.*
+import java.util.Base64
 
 class SignIn(val userEmail: String, val userPassword: String) {
 
@@ -18,7 +21,10 @@ class SignIn(val userEmail: String, val userPassword: String) {
     /**
      *Funzione che effettua il login dell'utente
      */
+    @RequiresApi(Build.VERSION_CODES.O)
     suspend fun signIn(): User {
+
+        val hashedPassword = Base64.getEncoder().encode(userPassword.toByteArray()).toString()
 
         val userDB: UserDB = httpHandlerReference.getClient().get {
             url {
@@ -26,9 +32,9 @@ class SignIn(val userEmail: String, val userPassword: String) {
                 host = httpHandlerReference.getHost()
                 port = httpHandlerReference.getPort()
                 path("/users/signInUser")
-
-                parameters.append("email", userEmail)
-                parameters.append("password", userPassword)
+                setBody(AccessInformation(userEmail, userPassword))
+                //parameters.append("email", userEmail)
+                //parameters.append("password", userPassword)
 
             }
         }.body()

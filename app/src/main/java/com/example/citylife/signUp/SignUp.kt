@@ -17,6 +17,7 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.util.network.*
 import java.security.MessageDigest
+import java.util.Base64
 
 data class SignUp(val name: String, val surname: String,
                   val email: String, val password: String) {
@@ -29,12 +30,15 @@ data class SignUp(val name: String, val surname: String,
 
     val httpHandlerReference: HttpHandler = HttpHandler()
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    val hashedPassword = Base64.getEncoder().encode(password.toByteArray()).toString()
+
     private var userDB = UserDB(
         name,
         surname,
         username,
         email,
-        password,
+        hashedPassword,
         0.0f.toString(),
         "",
         "[]"
