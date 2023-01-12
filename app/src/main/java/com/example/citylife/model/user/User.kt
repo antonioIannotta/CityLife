@@ -189,8 +189,8 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione factory per la creazione di una nuova segnalazione
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    fun newReport() =
-        ClientReportDB(getSpecificReportPreference().toString(),
+    fun newReport(type: String) =
+        ClientReportDB(getSpecificReportPreference(type).toString(),
             this.location.toString(),
             LocalDateTime.now().toString(),
             textForReport,
@@ -200,7 +200,7 @@ data class User(val username: String, var distance: Float = 0.0f,
      * Funzione che invia una segnalazione al server.
      */
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun sendReport() {
+    suspend fun sendReport(type: String) {
 
         httpHandlerReference.getClient().post {
             url {
@@ -210,7 +210,7 @@ data class User(val username: String, var distance: Float = 0.0f,
                 path("/users/insertReport")
             }
             contentType(ContentType.Application.Json)
-            setBody(newReport())
+            setBody(newReport(type))
         }
     }
 
