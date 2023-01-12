@@ -32,6 +32,7 @@ class SignIn(val userEmail: String, val userPassword: String) {
                 host = httpHandlerReference.getHost()
                 port = httpHandlerReference.getPort()
                 path("/users/signInUser")
+                contentType(ContentType.Application.Json)
                 setBody(AccessInformation(userEmail, userPassword))
                 //parameters.append("email", userEmail)
                 //parameters.append("password", userPassword)

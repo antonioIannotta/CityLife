@@ -33,6 +33,7 @@ data class SignUp(val name: String, val surname: String,
     @RequiresApi(Build.VERSION_CODES.O)
     val hashedPassword = Base64.getEncoder().encode(password.toByteArray()).toString()
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private var userDB = UserDB(
         name,
         surname,
